@@ -13,3 +13,4 @@ export * from './types'
  */
 export { default as Command } from './decorators/Command'
 export { default as Argument } from './decorators/Argument'
+export { default as Author } from './decorators/Author'

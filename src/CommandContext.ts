@@ -1,28 +1,24 @@
-import { Channel, User } from 'discord.js'
+import { MessageContract } from './types'
 
 export default class CommandContext {
+  /**
+   * List of reserved words
+   */
+  private readonly reservedWords = ['channel', 'message']
+
   /**
    * The context mapping
    */
   private readonly $context = new Map<string, any>()
 
   /**
-   * The author of the message
-   */
-  private $author: User | undefined = undefined
-
-  /**
-   * The channel the message has been sent
-   */
-  private $channel: Channel | undefined = undefined
-
-  /**
    * Sets the author of the message
    *
    * @param author The author
    */
-  public setAuthor(author: User | undefined) {
-    this.$author = author
+  public setAuthor(author: MessageContract['author'] | undefined) {
+    this.$context.set('author', author)
+
     return this
   }
 
@@ -31,8 +27,9 @@ export default class CommandContext {
    *
    * @param channel The channel
    */
-  public setChannel(channel: Channel | undefined) {
-    this.$channel = channel
+  public setChannel(channel: MessageContract['channel'] | undefined) {
+    this.$context.set('channel', channel)
+
     return this
   }
 
@@ -52,7 +49,13 @@ export default class CommandContext {
    * @param value The value of the argument
    */
   public setArgument(key: string, value: any) {
+    if (this.reservedWords.includes(key)) {
+      throw new Error(`${key} is a reserved word`)
+    }
+
     this.$context.set(key, value)
+
+    return this
   }
 
   /**
@@ -76,15 +79,15 @@ export default class CommandContext {
   /**
    * Returns the author of the message
    */
-  public getAuthor() {
-    return this.$author
+  public getAuthor(): MessageContract['author'] | undefined {
+    return this.getArgument('author')
   }
 
   /**
    * Returns the channel the message has been sent to
    */
-  public getChannel() {
-    return this.$channel
+  public getChannel(): MessageContract['channel'] | undefined {
+    return this.getArgument('channel')
   }
 
   /**
