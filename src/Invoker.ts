@@ -1,6 +1,7 @@
 import CommandContext from './CommandContext'
 import CommandDescriptor from './CommandDescriptor'
 import { InvokerHooks } from './types'
+import callEach from './utils/callEach'
 
 export default class Invoker {
   /**
@@ -40,11 +41,9 @@ export default class Invoker {
   }
 
   /**
-   * Invokes the command
-   *
-   * TODO: also call the hooks
+   * Set the associateds properties in the command instance
    */
-  public async invoke() {
+  private setAssociatedProperties() {
     for (const [propertyName, argumentName] of this.$descriptor.getAssocs()) {
       if (this.$context.hasArgument(argumentName)) {
         const value = this.$context.getArgument(argumentName)
@@ -53,7 +52,29 @@ export default class Invoker {
         throw new Error(`Argument ${argumentName} does not exists`)
       }
     }
+  }
 
-    return await this.$descriptor.instance.execute()
+  /**
+   * Invokes the command
+   */
+  public async invoke() {
+    await callEach(this.$hooks.beforeCommand, [
+      {
+        context: this.$context,
+        descriptor: this.$descriptor,
+      },
+    ])
+
+    this.setAssociatedProperties()
+    const response = await this.$descriptor.instance.execute()
+
+    await callEach(this.$hooks.afterCommand, [
+      {
+        context: this.$context,
+        descriptor: this.$descriptor,
+      },
+    ])
+
+    return response
   }
 }

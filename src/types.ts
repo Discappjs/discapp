@@ -1,4 +1,6 @@
 import { DMChannel, NewsChannel, TextChannel, User } from 'discord.js'
+import { CommandDescriptor } from '.'
+import CommandContext from './CommandContext'
 
 export interface CommandContract {
   execute(): any
@@ -39,3 +41,8 @@ export interface InvokerHooks {
 }
 
 export interface DiscappHooks extends InvokerHooks {}
+
+export type CommandHookFunction = (command: {
+  context: CommandContext
+  descriptor: CommandDescriptor
+}) => void

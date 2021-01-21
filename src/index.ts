@@ -4,6 +4,12 @@
 export { default as Application } from './Application'
 
 /**
+ * Discapp Internal
+ */
+export { default as CommandContext } from './CommandContext'
+export { default as CommandDescriptor } from './CommandDescriptor'
+
+/**
  * Types
  */
 export * from './types'
