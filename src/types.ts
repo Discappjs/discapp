@@ -33,6 +33,7 @@ export interface DiscappConfig {
   commandsDirectory: string
   token: string
   hooks: DiscappHooks
+  prefix: string
 }
 
 export interface InvokerHooks {

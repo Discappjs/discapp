@@ -13,6 +13,7 @@ export default class Application {
   private readonly $config: DiscappConfig = {
     commandsDirectory: './src/commands',
     token: '',
+    prefix: '',
     hooks: {
       afterCommand: [],
       beforeCommand: [],
@@ -86,7 +87,13 @@ export default class Application {
    * @param message The message
    */
   private async onInput(message: MessageContract) {
-    const { content, author, channel } = message
+    let { content, author, channel } = message
+
+    if (content.startsWith(this.$config.prefix)) {
+      content = content.substr(this.$config.prefix.length)
+    } else {
+      return
+    }
 
     for (const command of storage.getAllCommands()) {
       /**
