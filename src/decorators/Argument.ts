@@ -36,7 +36,10 @@ export default function Argument(
       Command.addAssoc(property, nameOrOptions.name).addArgument({
         name: nameOrOptions.name,
         description: nameOrOptions.description,
-        isRequired: nameOrOptions.isRequired || true,
+        isRequired:
+          nameOrOptions.isRequired === undefined
+            ? true
+            : nameOrOptions.isRequired,
       })
 
       return target
