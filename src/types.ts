@@ -18,7 +18,7 @@ export interface ArgumentDescriptor {
 }
 
 export interface ArgumentDecoratorOptions {
-  name: string
+  name?: string
   description?: string
   isRequired?: boolean
 }
@@ -58,6 +58,6 @@ export interface CommandConstructorContract {
   boot(): void
   setName(name: string): this
   setDescription(description: string): this
-  addAssoc(property: string, key: string): this
+  addAssoc(propertyKey: string, argumentKey: string): this
   addArgument(arg: ArgumentDescriptor): this
 }

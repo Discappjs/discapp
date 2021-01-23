@@ -92,13 +92,13 @@ export default abstract class BaseCommand {
   }
 
   /**
-   * Associates a property with a argument
+   * Associates a property with a argumewnt
    *
-   * @param property The property of the command
-   * @param key The key of the argument
+   * @param propertyKey The property of the command
+   * @param argumentKey The key of the argument
    */
-  public static addAssoc(property: string, key: string) {
-    this.$assocs.set(property, key)
+  public static addAssoc(propertyKey: string, argumentKey: string) {
+    this.$assocs.set(propertyKey, argumentKey)
 
     return this
   }

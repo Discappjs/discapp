@@ -5,7 +5,7 @@ export default class Parser {
   /**
    * The command namee
    */
-  private $commandName = ''
+  private $name = ''
 
   /**
    * The arguments of the input
@@ -20,7 +20,7 @@ export default class Parser {
   constructor(input: string) {
     const splittedInput = input.split(' ')
 
-    this.$commandName = splittedInput[0]
+    this.$name = splittedInput[0]
     this.$args = splittedInput.slice(1)
   }
 
@@ -44,7 +44,7 @@ export default class Parser {
        * Check if the names f the commands are the same
        * TODO: caseSensitive, aliasses
        */
-      if (this.$commandName !== this.$command.$name) {
+      if (this.$name !== this.$command.$name) {
         return false
       }
 
@@ -68,8 +68,9 @@ export default class Parser {
          * must be defined
          */
         if (currentArgDef.isRequired && !currentArgInput) {
-          console.log(this.$command.$arguments)
-          throw new Error(`Missing required argument ${currentArgDef.name}`)
+          throw new Error(
+            `Missing required argument: ${currentArgDef.name} (#${i}).`
+          )
         }
       }
     }
