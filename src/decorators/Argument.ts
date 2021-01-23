@@ -7,7 +7,7 @@ export default function Argument(
 ): PropertyDecorator
 
 export default function Argument(
-  nameOrOptions?: string | ArgumentDecoratorOptions
+  nameOrOptions: string | ArgumentDecoratorOptions = {}
 ) {
   return (target: any, property: string) => {
     const Command = target.constructor as CommandConstructorContract
@@ -33,13 +33,12 @@ export default function Argument(
     }
 
     if (typeof nameOrOptions === 'object') {
+      const name = nameOrOptions.name || property
+
       Command.addAssoc(property, nameOrOptions.name).addArgument({
-        name: nameOrOptions.name,
+        name,
         description: nameOrOptions.description,
-        isRequired:
-          nameOrOptions.isRequired === undefined
-            ? true
-            : nameOrOptions.isRequired,
+        isRequired: Boolean(nameOrOptions.isRequired),
       })
 
       return target
