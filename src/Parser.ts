@@ -1,5 +1,5 @@
 import CommandContext from './CommandContext'
-import CommandDescriptor from './CommandDescriptor'
+import { CommandConstructorContract } from './types'
 
 export default class Parser {
   /**
@@ -15,7 +15,7 @@ export default class Parser {
   /**
    * The command
    */
-  private $command: CommandDescriptor | null = null
+  private $command: CommandConstructorContract | null = null
 
   constructor(input: string) {
     const splittedInput = input.split(' ')
@@ -29,8 +29,8 @@ export default class Parser {
    *
    * @param commandDescriptor The descriptor of the command
    */
-  public forCommand(commandDescriptor: CommandDescriptor) {
-    this.$command = commandDescriptor
+  public forCommand(command: CommandConstructorContract) {
+    this.$command = command
 
     return this
   }
@@ -44,16 +44,16 @@ export default class Parser {
        * Check if the names f the commands are the same
        * TODO: caseSensitive, aliasses
        */
-      if (this.$commandName !== this.$command.name) {
+      if (this.$commandName !== this.$command.$name) {
         return false
       }
 
       /**
        * Loop through the arguments and validates them
        */
-      const numberOfArgsDef = this.$command.arguments.length
+      const numberOfArgsDef = this.$command.$arguments.length
       for (let i = 0; i < numberOfArgsDef; ++i) {
-        const currentArgDef = this.$command.arguments[i]
+        const currentArgDef = this.$command.$arguments[i]
         const currentArgInput: string = this.$args[i]
 
         /**
@@ -68,7 +68,8 @@ export default class Parser {
          * must be defined
          */
         if (currentArgDef.isRequired && !currentArgInput) {
-          throw new Error('Missing required argument')
+          console.log(this.$command.$arguments)
+          throw new Error(`Missing required argument ${currentArgDef.name}`)
         }
       }
     }
@@ -83,10 +84,10 @@ export default class Parser {
     const context = new CommandContext()
 
     if (this.$command) {
-      const numberOfArgsDef = this.$command.arguments.length
+      const numberOfArgsDef = this.$command.$arguments.length
 
       for (let i = 0; i < numberOfArgsDef; ++i) {
-        const currentArgDef = this.$command.arguments[i]
+        const currentArgDef = this.$command.$arguments[i]
         const currentArgInput = this.$args[i]
 
         context.setArgument(currentArgDef.name, currentArgInput)

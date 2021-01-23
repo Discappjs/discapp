@@ -1,7 +1,7 @@
+import BaseCommand from './BaseCommand'
 import CommandContext from './CommandContext'
-import CommandDescriptor from './CommandDescriptor'
-import { InvokerHooks } from './types'
 import callEach from './utils/callEach'
+import { CommandConstructorContract, InvokerHooks } from './types'
 
 export default class Invoker {
   /**
@@ -17,7 +17,7 @@ export default class Invoker {
     beforeCommand: [],
   }
 
-  constructor(private readonly $descriptor: CommandDescriptor) {}
+  constructor(private readonly $command: BaseCommand) {}
 
   /**
    * Sets the hooks for the invoker
@@ -44,10 +44,13 @@ export default class Invoker {
    * Set the associateds properties in the command instance
    */
   private setAssociatedProperties() {
-    for (const [propertyName, argumentName] of this.$descriptor.getAssocs()) {
+    const Command = (this.$command
+      .constructor as unknown) as CommandConstructorContract
+
+    for (const [propertyName, argumentName] of Command.$assocs.entries()) {
       if (this.$context.hasArgument(argumentName)) {
         const value = this.$context.getArgument(argumentName)
-        this.$descriptor.setProperty(propertyName, value)
+        this.$command.setProperty(propertyName, value)
       } else {
         throw new Error(`Argument ${argumentName} does not exists`)
       }
@@ -61,17 +64,17 @@ export default class Invoker {
     await callEach(this.$hooks.beforeCommand, [
       {
         context: this.$context,
-        descriptor: this.$descriptor,
+        command: this.$command.constructor,
       },
     ])
 
     this.setAssociatedProperties()
-    const response = await this.$descriptor.instance.execute()
+    const response = await this.$command.execute()
 
     await callEach(this.$hooks.afterCommand, [
       {
         context: this.$context,
-        descriptor: this.$descriptor,
+        command: this.$command.constructor,
       },
     ])
 

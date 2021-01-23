@@ -1,34 +1,45 @@
-import { storage } from '../Storage'
-import { ArgumentDescriptor, ArgumentDecoratorOptions } from '../types'
+import { CommandConstructorContract, ArgumentDecoratorOptions } from '../types'
 
-export default function Argument(options?: string | ArgumentDecoratorOptions) {
+export default function Argument(): PropertyDecorator
+export default function Argument(name: string): PropertyDecorator
+export default function Argument(
+  options: ArgumentDecoratorOptions
+): PropertyDecorator
+
+export default function Argument(
+  nameOrOptions?: string | ArgumentDecoratorOptions
+) {
   return (target: any, property: string) => {
-    const definition: ArgumentDescriptor = {
-      name: '',
-      isRequired: true,
+    const Command = target.constructor as CommandConstructorContract
+
+    Command.boot()
+
+    if (!nameOrOptions) {
+      Command.addAssoc(property, property).addArgument({
+        name: property,
+        isRequired: true,
+      })
+
+      return target
     }
 
-    if (!options) {
-      definition.name = property
-    } else if (typeof options === 'string') {
-      definition.name = options
-    } else if (typeof options === 'object') {
-      options.name = options.name
+    if (typeof nameOrOptions === 'string') {
+      Command.addAssoc(property, nameOrOptions).addArgument({
+        name: nameOrOptions,
+        isRequired: true,
+      })
 
-      if (options.description) {
-        definition.description = options.description
-      }
-
-      if (!options.isRequired) {
-        definition.isRequired = false
-      }
+      return target
     }
 
-    storage
-      .getOrCreateCommand(target)
-      .addAssoc(property, definition.name)
-      .addArgument(definition)
+    if (typeof nameOrOptions === 'object') {
+      Command.addAssoc(property, nameOrOptions.name).addArgument({
+        name: nameOrOptions.name,
+        description: nameOrOptions.description,
+        isRequired: nameOrOptions.isRequired || true,
+      })
 
-    return target
+      return target
+    }
   }
 }

@@ -1,9 +1,9 @@
-import { storage } from '../Storage'
+import { CommandConstructorContract } from '../types'
 
 export default function Author() {
   return (target: any, key: string) => {
-    storage.getOrCreateCommand(target).addAssoc(key, 'author')
-
+    const Command = target.constructor as CommandConstructorContract
+    Command.addAssoc(key, 'author')
     return target
   }
 }

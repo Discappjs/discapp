@@ -1,18 +1,25 @@
 import { storage } from '../Storage'
 import { CommandDecoratorOptions } from '../types'
 
-export default function Command(options: string | CommandDecoratorOptions) {
-  return (Command: any) => {
-    const descriptor = storage.getOrCreateCommand(Command.prototype)
+export default function Command(name: string): ClassDecorator
+export default function Command(
+  options: CommandDecoratorOptions
+): ClassDecorator
 
-    if (typeof options === 'string') {
-      descriptor.setName(options)
-    } else if (typeof options === 'object') {
-      descriptor.setName(options.name).setDescription(options.description)
+export default function Command(
+  nameOrOptions: string | CommandDecoratorOptions
+) {
+  return (Command: any) => {
+    Command.boot()
+
+    if (typeof nameOrOptions === 'object') {
+      Command.setName(nameOrOptions.name).setDescription(
+        nameOrOptions.description
+      )
+    } else {
+      Command.setName(nameOrOptions)
     }
 
-    descriptor.setInstance(new Command())
-
-    return Command
+    storage.addCommand(Command)
   }
 }

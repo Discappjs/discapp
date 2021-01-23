@@ -7,7 +7,7 @@ export { default as Application } from './Application'
  * Discapp Internal
  */
 export { default as CommandContext } from './CommandContext'
-export { default as CommandDescriptor } from './CommandDescriptor'
+export { default as BaseCommand } from './BaseCommand'
 
 /**
  * Types
