@@ -12,14 +12,15 @@ export default function Command(
   return (Command: any) => {
     Command.boot()
 
-    if (typeof nameOrOptions === 'object') {
-      Command.setName(nameOrOptions.name).setDescription(
-        nameOrOptions.description
-      )
-    } else {
-      Command.setName(nameOrOptions)
-    }
+    const name =
+      typeof nameOrOptions === 'object' ? nameOrOptions.name : nameOrOptions
+    const description =
+      typeof nameOrOptions === 'object' ? nameOrOptions.description : undefined
+
+    Command.setName(name).setDescription(description)
 
     storage.addCommand(Command)
+
+    return Command
   }
 }

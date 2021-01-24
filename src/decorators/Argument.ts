@@ -14,15 +14,6 @@ export default function Argument(
 
     Command.boot()
 
-    if (!nameOrOptions) {
-      Command.addAssoc(property, property).addArgument({
-        name: property,
-        isRequired: true,
-      })
-
-      return target
-    }
-
     if (typeof nameOrOptions === 'string') {
       Command.addAssoc(property, nameOrOptions).addArgument({
         name: nameOrOptions,
