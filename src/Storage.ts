@@ -1,10 +1,10 @@
-import CommandDescriptor from './CommandDescriptor'
+import { CommandConstructorContract } from '.'
 
 export default class Storage {
   /**
    * The commands
    */
-  private readonly $commands: CommandDescriptor[] = []
+  private readonly $commands: CommandConstructorContract[] = []
 
   /**
    * Returns all the command
@@ -14,34 +14,12 @@ export default class Storage {
   }
 
   /**
-   * Get the command if it already exists or creates it,
-   * also return the command descriptor
+   * Registers the command
    *
-   * @param target The target
+   * @param command The command
    */
-  public getOrCreateCommand(target: any) {
-    const command = this.getCommand(target)
-
-    if (command) {
-      return command
-    } else {
-      const descriptor = new CommandDescriptor().setTarget(target)
-      this.$commands.push(descriptor)
-
-      return descriptor
-    }
-  }
-
-  /**
-   * Return the command for the target
-   * Returns undefined if the target is not registered
-   *
-   * @param target The target
-   */
-  public getCommand(target: any) {
-    return this.$commands.find(command => {
-      return command.target === target
-    })
+  public addCommand(command: CommandConstructorContract) {
+    this.$commands.push(command)
   }
 }
 

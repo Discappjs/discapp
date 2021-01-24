@@ -7,7 +7,7 @@ export { default as Application } from './Application'
  * Discapp Internal
  */
 export { default as CommandContext } from './CommandContext'
-export { default as CommandDescriptor } from './CommandDescriptor'
+export { default as BaseCommand } from './BaseCommand'
 
 /**
  * Types
@@ -19,4 +19,4 @@ export * from './types'
  */
 export { default as Command } from './decorators/Command'
 export { default as Argument } from './decorators/Argument'
-export { default as Author } from './decorators/Author'
+export * from './decorators/associations'

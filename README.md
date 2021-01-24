@@ -47,8 +47,10 @@ You can test if the command is working by sending ping in the Discord server you
 Create the file: `GreetCommand.ts` in your commands directory, usually: `./src/commands`:
 
 ```ts
+import { Command, Argument, BaseCommand } from 'discapp'
+
 @Command('greet')
-export default class GreetCommand {
+export default class GreetCommand extends BaseCommand {
   @Argument()
   public name!: string
 

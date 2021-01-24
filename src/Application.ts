@@ -95,11 +95,11 @@ export default class Application {
       return
     }
 
-    for (const command of storage.getAllCommands()) {
+    for (const Command of storage.getAllCommands()) {
       /**
        * Parse the input for the context
        */
-      const parser = new Parser(content).forCommand(command)
+      const parser = new Parser(content).forCommand(Command)
 
       try {
         /**
@@ -126,7 +126,7 @@ export default class Application {
             beforeCommand: this.$config.hooks.beforeCommand,
           }
 
-          const response = await new Invoker(command)
+          const response = await new Invoker(new Command())
             .withHooks(invokerSpecificHooks)
             .withContext(context)
             .invoke()
