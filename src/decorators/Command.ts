@@ -1,4 +1,4 @@
-import { storage } from '../Storage'
+import Storage from '../Storage'
 import { CommandDecoratorOptions } from '../types'
 
 export default function Command(name: string): ClassDecorator
@@ -19,7 +19,7 @@ export default function Command(
 
     Command.setName(name).setDescription(description)
 
-    storage.addCommand(Command)
+    Storage.addCommand(Command)
 
     return Command
   }

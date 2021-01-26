@@ -1,15 +1,15 @@
-import { CommandConstructorContract } from '.'
+import { CommandConstructorContract } from './types'
 
 export default class Storage {
   /**
    * The commands
    */
-  private readonly $commands: CommandConstructorContract[] = []
+  private static readonly $commands: CommandConstructorContract[] = []
 
   /**
    * Returns all the command
    */
-  public getAllCommands() {
+  public static getAllCommands() {
     return [...this.$commands]
   }
 
@@ -18,9 +18,7 @@ export default class Storage {
    *
    * @param command The command
    */
-  public addCommand(command: CommandConstructorContract) {
+  public static addCommand(command: CommandConstructorContract) {
     this.$commands.push(command)
   }
 }
-
-export const storage = new Storage()

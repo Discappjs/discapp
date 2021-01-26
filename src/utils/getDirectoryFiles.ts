@@ -6,7 +6,9 @@ export default function getDirectoryFiles(dirPath: string) {
   const result = []
 
   for (const dirFile of dirFiles) {
-    result.push(path.resolve(dirPath, dirFile))
+    if (['.ts', '.js'].includes(path.extname(dirFile))) {
+      result.push(path.resolve(dirPath, dirFile))
+    }
   }
 
   return result
