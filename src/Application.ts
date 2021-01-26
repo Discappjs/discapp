@@ -2,7 +2,7 @@ import { Client } from 'discord.js'
 
 import Invoker from './Invoker'
 import Parser from './Parser'
-import { storage } from './Storage'
+import Storage from './Storage'
 import getDirectoryFiles from './utils/getDirectoryFiles'
 import { DiscappConfig, MessageContract } from './types'
 
@@ -59,7 +59,7 @@ export default class Application {
    * TODO: Load listeners
    */
   private loadApp() {
-    const directories = ['./src/commands']
+    const directories = [this.$config.commandsDirectory]
 
     for (const directory of directories) {
       const commands = getDirectoryFiles(directory)
@@ -95,7 +95,7 @@ export default class Application {
       return
     }
 
-    for (const Command of storage.getAllCommands()) {
+    for (const Command of Storage.getAllCommands()) {
       /**
        * Parse the input for the context
        */
