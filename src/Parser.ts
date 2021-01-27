@@ -91,7 +91,16 @@ export default class Parser {
         const currentArgDef = this.$command.$arguments[i]
         const currentArgInput = this.$args[i]
 
-        context.setArgument(currentArgDef.name, currentArgInput)
+        /**
+         * If the argument is a number, then we must cast the
+         * input to a number.
+         */
+        context.setArgument(
+          currentArgDef.name,
+          currentArgDef.type === Number
+            ? Number(currentArgInput)
+            : currentArgInput
+        )
       }
     }
 

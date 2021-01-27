@@ -12,27 +12,31 @@ export default function Argument(
   return (target: any, property: string) => {
     const Command = target.constructor as CommandConstructorContract
 
+    /**
+     * Clear eventual previous commands data and ensure
+     * everything is readyy
+     */
     Command.boot()
 
-    if (typeof nameOrOptions === 'string') {
-      Command.addAssoc(property, nameOrOptions).addArgument({
-        name: nameOrOptions,
-        isRequired: true,
-      })
+    const name =
+      typeof nameOrOptions === 'string'
+        ? nameOrOptions
+        : nameOrOptions.name || property
+    const description =
+      typeof nameOrOptions === 'string' ? undefined : nameOrOptions.description
+    const type = Reflect.getMetadata('design:type', target, property)
 
-      return target
-    }
+    /**
+     * Registers the argument and its metadata as part of
+     * the targeted command.
+     */
+    Command.addAssoc(property, name).addArgument({
+      name,
+      description,
+      isRequired: true,
+      type,
+    })
 
-    if (typeof nameOrOptions === 'object') {
-      const name = nameOrOptions.name || property
-
-      Command.addAssoc(property, name).addArgument({
-        name,
-        description: nameOrOptions.description,
-        isRequired: Boolean(nameOrOptions.isRequired),
-      })
-
-      return target
-    }
+    return target
   }
 }
