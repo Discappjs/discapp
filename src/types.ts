@@ -15,6 +15,7 @@ export interface ArgumentDescriptor {
   name: string
   description?: string
   isRequired: boolean
+  type: any
 }
 
 export interface ArgumentDecoratorOptions {
