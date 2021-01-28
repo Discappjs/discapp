@@ -11,6 +11,15 @@ export default class CommandContext {
    */
   private readonly $context = new Map<string, any>()
 
+  constructor(private readonly $content: string = '') {}
+
+  /**
+   * The untreated content of the message
+   */
+  get content() {
+    return this.$content
+  }
+
   /**
    * Sets the author of the message
    *
