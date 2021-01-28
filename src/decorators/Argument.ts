@@ -1,3 +1,4 @@
+import { isObject, isString } from '../utils/isType'
 import { CommandConstructorContract, ArgumentDecoratorOptions } from '../types'
 
 export default function Argument(): PropertyDecorator
@@ -11,31 +12,23 @@ export default function Argument(
 ) {
   return (target: any, property: string) => {
     const Command = target.constructor as CommandConstructorContract
+    const definition = {
+      name: isObject(nameOrOptions)
+        ? nameOrOptions.name || property
+        : nameOrOptions,
+      description: isObject(nameOrOptions)
+        ? nameOrOptions.description
+        : undefined,
+      type: Reflect.getMetadata('design:type', target, property),
+      isRequired: isString(nameOrOptions)
+        ? true
+        : nameOrOptions.isRequired !== undefined
+        ? nameOrOptions.isRequired
+        : true,
+    }
 
-    /**
-     * Clear eventual previous commands data and ensure
-     * everything is readyy
-     */
     Command.boot()
-
-    const name =
-      typeof nameOrOptions === 'string'
-        ? nameOrOptions
-        : nameOrOptions.name || property
-    const description =
-      typeof nameOrOptions === 'string' ? undefined : nameOrOptions.description
-    const type = Reflect.getMetadata('design:type', target, property)
-
-    /**
-     * Registers the argument and its metadata as part of
-     * the targeted command.
-     */
-    Command.addAssoc(property, name).addArgument({
-      name,
-      description,
-      isRequired: true,
-      type,
-    })
+    Command.addAssoc(property, definition.name).addArgument(definition)
 
     return target
   }

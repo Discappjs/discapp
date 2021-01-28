@@ -1,33 +1,31 @@
 import CommandContext from './CommandContext'
+import BadInputException from './exceptions/BadInputException'
 import { CommandConstructorContract } from './types'
 
 export default class Parser {
   /**
-   * The command namee
+   * The name of the input
    */
-  private $name = ''
+  private readonly $name: string = ''
 
   /**
    * The arguments of the input
    */
-  private $args: any[]
+  private readonly $arguments: any[]
 
   /**
    * The command
    */
   private $command: CommandConstructorContract | null = null
 
-  constructor(input: string) {
-    const splittedInput = input.split(' ')
-
-    this.$name = splittedInput[0]
-    this.$args = splittedInput.slice(1)
+  constructor(private readonly $input: string) {
+    ;[this.$name, ...this.$arguments] = $input.split(' ')
   }
 
   /**
    * Defines the command to validate against the input
    *
-   * @param commandDescriptor The descriptor of the command
+   * @param command The command
    */
   public forCommand(command: CommandConstructorContract) {
     this.$command = command
@@ -36,71 +34,72 @@ export default class Parser {
   }
 
   /**
-   * Throws if the input is not valid
+   * Return if the input matches the command
    */
   public isValid() {
-    if (this.$command) {
-      /**
-       * Check if the names f the commands are the same
-       * TODO: caseSensitive, aliasses
-       */
-      if (this.$name !== this.$command.$name) {
-        return false
-      }
+    if (this.$name === this.$command.$name) {
+      let i = 0
+      for (const argDef of this.$command.$arguments) {
+        const input = this.$arguments[i]
 
-      /**
-       * Loop through the arguments and validates them
-       */
-      const numberOfArgsDef = this.$command.$arguments.length
-      for (let i = 0; i < numberOfArgsDef; ++i) {
-        const currentArgDef = this.$command.$arguments[i]
-        const currentArgInput: string = this.$args[i]
-
-        /**
-         * Only the last argument can be not required
-         */
-        if (i !== numberOfArgsDef - 1 && !currentArgDef.isRequired) {
-          throw new Error('Optional argument must be the last argument')
-        }
-
-        /**
-         * If the argument is requireed than the currentArgInput
-         * must be defined
-         */
-        if (currentArgDef.isRequired && !currentArgInput) {
-          throw new Error(
-            `Missing required argument: ${currentArgDef.name} (#${i}).`
+        if (argDef.isRequired && !input) {
+          throw new BadInputException(
+            'MISSING_ARGUMENT',
+            this.$command.$name,
+            argDef.name,
+            `Argument '${argDef.name}' (${i + 1}º) is required`
           )
         }
+
+        if (
+          argDef.isRequired &&
+          argDef.type === Number &&
+          isNaN(Number(input))
+        ) {
+          throw new BadInputException(
+            'NAN_ARGUMENT',
+            this.$command.name,
+            argDef.name,
+            `Argument '${argDef.name}' (#${i + 1}º) should be a numeric value`
+          )
+        }
+
+        ++i
       }
+
+      return true
     }
 
-    return true
+    return false
   }
 
   /**
    * Generate the context
    */
   public getContext() {
-    const context = new CommandContext()
+    const context = new CommandContext(this.$input)
 
     if (this.$command) {
-      const numberOfArgsDef = this.$command.$arguments.length
-
-      for (let i = 0; i < numberOfArgsDef; ++i) {
-        const currentArgDef = this.$command.$arguments[i]
-        const currentArgInput = this.$args[i]
-
+      let i = 0
+      for (const { name, type } of this.$command.$arguments) {
         /**
-         * If the argument is a number, then we must cast the
-         * input to a number.
+         * Since an Array argument has to be the last
+         * argument, we can for sure put all the remaining
+         * values.
          */
-        context.setArgument(
-          currentArgDef.name,
-          currentArgDef.type === Number
-            ? Number(currentArgInput)
-            : currentArgInput
-        )
+        if (type === Array) {
+          context.setArgument(name, this.$arguments.slice(i))
+        } else {
+          /**
+           * If the argument is a numeric argument, then
+           * we cast it to number.
+           */
+          context.setArgument(
+            name,
+            type === Number ? Number(this.$arguments[i]) : this.$arguments[i]
+          )
+          ++i
+        }
       }
     }
 

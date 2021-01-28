@@ -1,9 +1,10 @@
-import { Client } from 'discord.js'
+import { Client, MessageEmbed } from 'discord.js'
 
 import Invoker from './Invoker'
 import Parser from './Parser'
 import Storage from './Storage'
 import getDirectoryFiles from './utils/getDirectoryFiles'
+import BadInputException from './exceptions/BadInputException'
 import { DiscappConfig, MessageContract } from './types'
 
 export default class Application {
@@ -55,8 +56,6 @@ export default class Application {
 
   /**
    * Loads the commands
-   *
-   * TODO: Load listeners
    */
   private loadApp() {
     const directories = [this.$config.commandsDirectory]
@@ -87,8 +86,9 @@ export default class Application {
    * @param message The message
    */
   private async onInput(message: MessageContract) {
-    let { content, author, channel } = message
+    const { content: originalContent, author, channel } = message
 
+    let content = originalContent
     if (content.startsWith(this.$config.prefix)) {
       content = content.substr(this.$config.prefix.length)
     } else {
@@ -96,22 +96,13 @@ export default class Application {
     }
 
     for (const Command of Storage.getAllCommands()) {
-      /**
-       * Parse the input for the context
-       */
-      const parser = new Parser(content).forCommand(Command)
-
       try {
         /**
-         * Check if the input matches the command. If not, skips
-         * and tests for the next command.
-         *
-         * If matches, but is not valid (e.g: Missing argument) then
-         * a error will be throwed.
+         * Parse the input for the context
          */
-        const isValid = parser.isValid()
+        const parser = new Parser(content).forCommand(Command)
 
-        if (isValid) {
+        if (parser.isValid()) {
           const context = parser
             .getContext()
             .setAuthor(author)
@@ -138,12 +129,34 @@ export default class Application {
           if (response) {
             this.respond(channel, response)
           }
-        } else {
-          continue
         }
       } catch (error) {
-        console.log(error.message)
+        if (error instanceof BadInputException) {
+          const errorMessage = new MessageEmbed()
+            .setTitle('Error: bad input')
+            .setDescription(
+              'The message does not match the expected command format'
+            )
+            .addField('Command', error.commandName)
+            .addField('Argument', error.argumentName)
+            .addField('Error message', error.message)
+            .setColor('#ff6e6c')
+            .setFooter(Date.now())
+
+          this.respond(channel, errorMessage)
+        } else {
+          throw error
+        }
       }
+    }
+  }
+
+  /**
+   * Validates all the commands
+   */
+  private verifyCommands() {
+    for (const Command of Storage.getAllCommands()) {
+      Command.validate()
     }
   }
 
@@ -151,6 +164,8 @@ export default class Application {
    * Ignites the app
    */
   public ignite() {
+    this.verifyCommands()
+
     /**
      * Once the App is running logs
      */
