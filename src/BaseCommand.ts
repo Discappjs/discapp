@@ -1,3 +1,4 @@
+import InvalidArgumentException from './exceptions/InvalidArgumentException'
 import { ArgumentDescriptor } from './types'
 
 export default abstract class BaseCommand {
@@ -101,6 +102,66 @@ export default abstract class BaseCommand {
     this.$assocs.set(propertyKey, argumentKey)
 
     return this
+  }
+
+  /**
+   * Throws if the command is not valid
+   */
+  public static validate() {
+    if (this.$arguments.length > 0) {
+      /**
+       * Loop through the arguments and validates them
+       */
+      const numberOfArgsDef = this.$arguments.length
+      const lastArgument = this.$arguments[numberOfArgsDef - 1]
+      let canBeOptional = true
+
+      /**
+       * If the last argument is an array, then can't
+       * exist optional arguments
+       */
+      if (lastArgument.type === Array) {
+        canBeOptional = false
+      }
+
+      /**
+       * Loop through arguments checking if they are also
+       * valid
+       */
+      for (let i = numberOfArgsDef - 2; i >= 0; --i) {
+        const { name, type, isRequired } = this.$arguments[i]
+
+        if (type === Array) {
+          throw new InvalidArgumentException(
+            'INVALID_ARGUMENT',
+            this.$name,
+            name,
+            `Argument ${name} can't be a array.`
+          )
+        }
+
+        /**
+         * After the first required argument or array argument
+         * all arguments must be required
+         */
+        if (canBeOptional && isRequired) {
+          canBeOptional = false
+        }
+
+        /**
+         * If the argument can't be optional but is assigned
+         * as one, then we should throw
+         */
+        if (!canBeOptional && !isRequired) {
+          throw new InvalidArgumentException(
+            'INVALID_ARGUMENT',
+            this.$name,
+            name,
+            `Argument ${name} can't be optional. Optional arguments must be at the end or followed only by optional arguments.`
+          )
+        }
+      }
+    }
   }
 
   /**
