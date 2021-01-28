@@ -1,5 +1,6 @@
 import CommandContext from './CommandContext'
 import BadInputException from './exceptions/BadInputException'
+import { isNumber } from './utils/isType'
 import { CommandConstructorContract } from './types'
 
 export default class Parser {
@@ -18,7 +19,7 @@ export default class Parser {
    */
   private $command: CommandConstructorContract | null = null
 
-  constructor(private readonly $input: string) {
+  constructor($input: string) {
     ;[this.$name, ...this.$arguments] = $input.split(' ')
   }
 
@@ -39,28 +40,33 @@ export default class Parser {
   public isValid() {
     if (this.$name === this.$command.$name) {
       let i = 0
-      for (const argDef of this.$command.$arguments) {
+      for (const { name, type, isRequired } of this.$command.$arguments) {
         const input = this.$arguments[i]
 
-        if (argDef.isRequired && !input) {
+        /**
+         * If argument is required, but input is missing
+         * then throw
+         */
+        if (isRequired && !input) {
           throw new BadInputException(
             'MISSING_ARGUMENT',
             this.$command.$name,
-            argDef.name,
-            `Argument '${argDef.name}' (${i + 1}º) is required`
+            name,
+            `Argument '${name}' (${i + 1}º) is required`
           )
         }
 
-        if (
-          argDef.isRequired &&
-          argDef.type === Number &&
-          isNaN(Number(input))
-        ) {
+        /**
+         * If argument is numeric but its value is not numueric
+         * then throw
+         */
+        if (isRequired && type === Number && isNaN(Number(input))) {
           throw new BadInputException(
             'NAN_ARGUMENT',
             this.$command.name,
-            argDef.name,
-            `Argument '${argDef.name}' (#${i + 1}º) should be a numeric value`
+            name,
+            `Argument '${name}' (#${i +
+              1}º) expects a numeric value, ${input} given`
           )
         }
 
@@ -74,10 +80,10 @@ export default class Parser {
   }
 
   /**
-   * Generate the context
+   * Generates the context
    */
-  public getContext() {
-    const context = new CommandContext(this.$input)
+  public makeContext(originalContent: string) {
+    const context = new CommandContext(originalContent)
 
     if (this.$command) {
       let i = 0
@@ -85,19 +91,20 @@ export default class Parser {
         /**
          * Since an Array argument has to be the last
          * argument, we can for sure put all the remaining
-         * values.
+         * values
          */
         if (type === Array) {
           context.setArgument(name, this.$arguments.slice(i))
         } else {
           /**
            * If the argument is a numeric argument, then
-           * we cast it to number.
+           * we cast it to number
            */
-          context.setArgument(
-            name,
-            type === Number ? Number(this.$arguments[i]) : this.$arguments[i]
-          )
+          const value = isNumber(this.$arguments[i])
+            ? Number(this.$arguments[i])
+            : this.$arguments[i]
+
+          context.setArgument(name, value)
           ++i
         }
       }
