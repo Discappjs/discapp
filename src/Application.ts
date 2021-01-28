@@ -1,9 +1,12 @@
 import { Client, MessageEmbed } from 'discord.js'
+import { Signale } from 'signale'
+import path from 'path'
 
 import Invoker from './Invoker'
 import Parser from './Parser'
 import Storage from './Storage'
 import getDirectoryFiles from './utils/getDirectoryFiles'
+import pick from './utils/omit'
 import BadInputException from './exceptions/BadInputException'
 import { DiscappConfig, MessageContract } from './types'
 
@@ -21,6 +24,15 @@ export default class Application {
     },
   }
 
+  /**
+   * Application logger
+   */
+  private readonly logger = new Signale({
+    config: {
+      displayTimestamp: true,
+    },
+  })
+
   constructor(private readonly $client = new Client()) {}
 
   /**
@@ -29,7 +41,12 @@ export default class Application {
    * @param config The configuration
    */
   public withConfig(config: Partial<DiscappConfig>) {
-    Object.assign(this.$config, config)
+    const filteredConfig: Partial<DiscappConfig> = pick(
+      config,
+      Object.keys(this.$config)
+    )
+
+    Object.assign(this.$config, filteredConfig)
 
     return this
   }
@@ -57,14 +74,47 @@ export default class Application {
   /**
    * Loads the commands
    */
-  private loadApp() {
+  private loadApp(logger: Signale) {
     const directories = [this.$config.commandsDirectory]
 
     for (const directory of directories) {
-      const commands = getDirectoryFiles(directory)
+      const dirFiles = getDirectoryFiles(directory)
 
-      for (const command of commands) {
-        require(command)
+      for (const file of dirFiles) {
+        require(file)
+        logger.success('File %s was successfully loaded', path.basename(file))
+      }
+    }
+
+    return this
+  }
+
+  /**
+   * Validates all the commands
+   */
+  private validateCommands(logger: Signale) {
+    for (const Command of Storage.getAllCommands()) {
+      try {
+        Command.validate()
+        logger.success(
+          'Command %s (%s) is valid and ready',
+          Command.name,
+          Command.$name
+        )
+      } catch (error) {
+        /**
+         * If the command is invalid, removes the command
+         * from the Storage and throw a warning
+         */
+        Storage.removeCommand(Command)
+        logger.error(
+          'Command %s (%s) is valid and ready',
+          Command.name,
+          Command.$name
+        )
+        logger.error(
+          `Command ${Command.name} is invalid, so it can't be used by Discapp.`
+        )
       }
     }
 
@@ -75,7 +125,9 @@ export default class Application {
    * Initializes the Discappp
    */
   public bootstrap() {
-    this.loadApp()
+    const logger = this.logger.scope('bootstrap')
+
+    this.loadApp(logger).validateCommands(logger)
 
     return this
   }
@@ -87,8 +139,8 @@ export default class Application {
    */
   private async onInput(message: MessageContract) {
     const { content: originalContent, author, channel } = message
-
     let content = originalContent
+
     if (content.startsWith(this.$config.prefix)) {
       content = content.substr(this.$config.prefix.length)
     } else {
@@ -104,7 +156,7 @@ export default class Application {
 
         if (parser.isValid()) {
           const context = parser
-            .getContext()
+            .makeContext(originalContent)
             .setAuthor(author)
             .setChannel(channel)
 
@@ -152,25 +204,16 @@ export default class Application {
   }
 
   /**
-   * Validates all the commands
-   */
-  private verifyCommands() {
-    for (const Command of Storage.getAllCommands()) {
-      Command.validate()
-    }
-  }
-
-  /**
    * Ignites the app
    */
   public ignite() {
-    this.verifyCommands()
+    const app = this.logger.scope('app')
 
     /**
      * Once the App is running logs
      */
     this.$client.once('ready', () => {
-      console.log('Running')
+      app.success('Discapp is running')
     })
 
     /**
