@@ -7,7 +7,7 @@ export default class Storage {
   private static readonly $commands: CommandConstructorContract[] = []
 
   /**
-   * Returns all the command
+   * Returns all the commands
    */
   public static getAllCommands() {
     return [...this.$commands]
@@ -18,7 +18,7 @@ export default class Storage {
    *
    * @param command The command
    */
-  public static addCommand(command: CommandConstructorContract) {
-    this.$commands.push(command)
+  public static addCommand(Command: CommandConstructorContract) {
+    this.$commands.push(Command)
   }
 }

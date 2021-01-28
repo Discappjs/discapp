@@ -61,4 +61,5 @@ export interface CommandConstructorContract {
   setDescription(description: string): this
   addAssoc(propertyKey: string, argumentKey: string): this
   addArgument(arg: ArgumentDescriptor): this
+  validate(): boolean
 }
