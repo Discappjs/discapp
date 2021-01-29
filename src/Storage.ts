@@ -14,11 +14,23 @@ export default class Storage {
   }
 
   /**
+   * Removes the command
+   */
+  public static removeCommand(Command: CommandConstructorContract) {
+    const index = this.$commands.indexOf(Command)
+    this.$commands.splice(index, 1)
+
+    return this
+  }
+
+  /**
    * Registers the command
    *
    * @param command The command
    */
-  public static addCommand(Command: CommandConstructorContract) {
-    this.$commands.push(Command)
+  public static addCommand(...Command: CommandConstructorContract[]) {
+    this.$commands.push(...Command)
+
+    return this
   }
 }

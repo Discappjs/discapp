@@ -5,3 +5,7 @@ export function isObject(target: any): target is object {
 export function isString(target: any): target is string {
   return typeof target === 'string'
 }
+
+export function isNumber(target: any): target is number {
+  return typeof target === 'number'
+}

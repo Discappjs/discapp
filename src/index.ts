@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 
 /**
- * Application pillars
+ * Application
  */
 export { default as Application } from './Application'
 
