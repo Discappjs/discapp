@@ -6,7 +6,7 @@ import Invoker from './Invoker'
 import Parser from './Parser'
 import Storage from './Storage'
 import getDirectoryFiles from './utils/getDirectoryFiles'
-import pick from './utils/omit'
+import pick from './utils/pick'
 import BadInputException from './exceptions/BadInputException'
 import { DiscappConfig, MessageContract } from './types'
 
