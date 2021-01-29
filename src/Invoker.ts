@@ -44,8 +44,7 @@ export default class Invoker {
    * Set the associateds properties in the command instance
    */
   private setAssociatedProperties() {
-    const Command = (this.$command
-      .constructor as unknown) as CommandConstructorContract
+    const Command = this.$command.constructor as CommandConstructorContract
 
     for (const [propertyName, argumentName] of Command.$assocs.entries()) {
       if (this.$context.hasArgument(argumentName)) {
@@ -61,6 +60,10 @@ export default class Invoker {
    * Invokes the command
    */
   public async invoke() {
+    /**
+     * Call the global 'beforeCommand' hooks with, usefull
+     * for third party codes being able to hook Discapp
+     */
     await callEach(this.$hooks.beforeCommand, [
       {
         context: this.$context,
@@ -69,8 +72,27 @@ export default class Invoker {
     ])
 
     this.setAssociatedProperties()
+
+    /**
+     * Call the global 'afterCommand' hooks. Useful
+     * for plugins to being able to hook into a
+     * Discapp application.
+     */
+    await this.$command.beforeExecute()
+
     const response = await this.$command.execute()
 
+    /**
+     * Executes the 'afterExecute' function, if it exists
+     * after executing the command
+     */
+    await this.$command.afterExecute()
+
+    /**
+     * Call the global 'afterCommand' hooks. Useful
+     * for plugins to being able to hook into a
+     * Discapp application.
+     */
     await callEach(this.$hooks.afterCommand, [
       {
         context: this.$context,
