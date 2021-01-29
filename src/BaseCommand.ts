@@ -165,7 +165,17 @@ export default abstract class BaseCommand {
   }
 
   /**
+   * Executes before the command
+   */
+  public beforeExecute() {}
+
+  /**
+   * Executes after the command
+   */
+  public afterExecute() {}
+
+  /**
    * Executes the command
    */
-  abstract execute(): any
+  public abstract execute(): any
 }
