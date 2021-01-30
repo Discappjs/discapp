@@ -66,7 +66,7 @@ export default class Application {
       if (typeof responses === 'string') {
         channel.send(responses)
       } else {
-        channel.send(responses)
+        channel.send({ embed: responses })
       }
     }
   }
@@ -169,7 +169,7 @@ export default class Application {
             beforeCommand: this.$config.hooks.beforeCommand,
           }
 
-          const response = await new Invoker(new Command())
+          const response = await new Invoker(Command)
             .withHooks(invokerSpecificHooks)
             .withContext(context)
             .invoke()
