@@ -19,7 +19,5 @@ export default function Command(
     Command.boot()
     Command.setName(name).setDescription(description)
     Storage.addCommand(Command)
-
-    return Command
   }
 }
