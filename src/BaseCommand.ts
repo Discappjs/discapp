@@ -77,6 +77,15 @@ export default abstract class BaseCommand {
   }
 
   /**
+   * Return the argument with the given name
+   *
+   * @param name The name of the argument
+   */
+  public static getArgument(name: string) {
+    return this.$arguments.find(arg => arg.name === name)
+  }
+
+  /**
    * Sets the property in the command instance
    *
    * @param property The property
@@ -86,6 +95,7 @@ export default abstract class BaseCommand {
     Object.defineProperty(this, key, {
       configurable: true,
       enumerable: true,
+      writable: true,
       value,
     })
 

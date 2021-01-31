@@ -17,7 +17,14 @@ export default class Invoker {
     beforeCommand: [],
   }
 
-  constructor(private readonly $command: BaseCommand) {}
+  /**
+   * The command instance
+   */
+  private readonly $command: BaseCommand
+
+  constructor(Command: CommandConstructorContract) {
+    this.$command = new Command()
+  }
 
   /**
    * Sets the hooks for the invoker
@@ -47,7 +54,14 @@ export default class Invoker {
     const Command = this.$command.constructor as CommandConstructorContract
 
     for (const [propertyName, argumentName] of Command.$assocs.entries()) {
-      if (this.$context.hasArgument(argumentName)) {
+      const argDefinition = Command.getArgument(argumentName)
+      const hasArg = this.$context.hasArgument(argumentName)
+
+      if (!argDefinition.isRequired && !hasArg) {
+        continue
+      }
+
+      if (hasArg) {
         const value = this.$context.getArgument(argumentName)
         this.$command.setProperty(propertyName, value)
       } else {

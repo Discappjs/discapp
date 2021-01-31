@@ -1,6 +1,5 @@
 import CommandContext from './CommandContext'
 import BadInputException from './exceptions/BadInputException'
-import { isNumber } from './utils/isType'
 import { CommandConstructorContract } from './types'
 
 export default class Parser {
@@ -90,22 +89,27 @@ export default class Parser {
 
     if (this.$command) {
       let i = 0
-      for (const { name, type } of this.$command.$arguments) {
+      for (const { name, type, isRequired } of this.$command.$arguments) {
         /**
          * Since an Array argument has to be the last
          * argument, we can for sure put all the remaining
-         * values
+         * values in the argument
          */
         if (type === Array) {
           context.setArgument(name, this.$arguments.slice(i))
         } else {
+          const argValue = this.$arguments[i]
+
+          if (!isRequired && argValue === undefined) {
+            ++i
+            continue
+          }
+
           /**
            * If the argument is a numeric argument, then
-           * we cast it to number
+           * we have to cast it to number
            */
-          const value = isNumber(this.$arguments[i])
-            ? Number(this.$arguments[i])
-            : this.$arguments[i]
+          const value = type === Number ? Number(argValue) : argValue
 
           context.setArgument(name, value)
           ++i

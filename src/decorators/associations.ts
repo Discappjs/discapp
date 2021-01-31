@@ -6,8 +6,6 @@ function createAssociation(argName: string) {
       const Command = target.constructor as CommandConstructorContract
       Command.boot()
       Command.addAssoc(property, argName || property)
-
-      return target
     }
   }
 }
