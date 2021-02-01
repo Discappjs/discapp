@@ -154,7 +154,7 @@ export default class Application implements ApplicationContract {
 
         if (parser.isValid()) {
           const context = parser
-            .makeContext(originalContent)
+            .makeContext()
             .setAuthor(author)
             .setChannel(channel)
 
