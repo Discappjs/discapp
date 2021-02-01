@@ -19,8 +19,8 @@ export default class Parser implements ParserContract {
    */
   private $command: StaticCommandContract | null = null
 
-  constructor(input: string) {
-    const splittedInput = input.split(' ')
+  constructor(private $input: string = '') {
+    const splittedInput = $input.split(' ')
 
     this.$commandName = splittedInput.shift()
     this.$arguments = splittedInput
@@ -31,8 +31,8 @@ export default class Parser implements ParserContract {
    *
    * @param command The command
    */
-  public forCommand(command: StaticCommandContract) {
-    this.$command = command
+  public forCommand(command: any) {
+    this.$command = command as StaticCommandContract
 
     return this
   }
@@ -85,8 +85,8 @@ export default class Parser implements ParserContract {
   /**
    * Generates the context
    */
-  public makeContext(originalContent: string) {
-    const context = new CommandContext(originalContent)
+  public makeContext() {
+    const context = new CommandContext(this.$input)
 
     if (this.$command) {
       let i = 0

@@ -14,5 +14,5 @@ export default interface StaticCommandContract {
   addAssoc(propertyKey: string, argumentKey: string): this
   addArgument(arg: ArgumentDescriptor): this
   getArgument(name: string): ArgumentDescriptor | undefined
-  validate(): boolean
+  validate(): void
 }

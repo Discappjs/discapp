@@ -5,7 +5,7 @@ export default class CommandContext implements CommandContextContract {
   /**
    * List of reserved words
    */
-  private readonly reservedWords = ['channel', 'message']
+  private readonly reservedWords = ['channel', 'author']
 
   /**
    * The context mapping

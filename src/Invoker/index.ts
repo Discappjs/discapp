@@ -25,7 +25,7 @@ export default class Invoker implements InvokerContract {
    */
   private readonly $command: CommandContract
 
-  constructor(Command: StaticCommandContract) {
+  constructor(Command: any) {
     this.$command = new Command()
   }
 

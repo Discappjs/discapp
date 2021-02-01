@@ -11,6 +11,7 @@ export { default as Application } from './Application'
 export { default as CommandContext } from './CommandContext'
 export { default as BaseCommand } from './BaseCommand'
 export { default as Storage } from './Storage'
+export { default as Parser } from './Parser'
 
 /**
  * Types and interfaces
