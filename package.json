@@ -34,16 +34,6 @@
   "name": "discapp",
   "author": "Jota",
   "module": "dist/discapp.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/discapp.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/discapp.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^4.9.1",
     "husky": "^4.3.8",
