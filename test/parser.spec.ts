@@ -16,7 +16,7 @@ describe('Parser', () => {
       .forCommand(ArrayCommand)
       .makeContext()
 
-    expect(context.getArgument('arrayArg')).toEqual(['foo', 'bar'])
+    expect(context.get('arrayArg')).toEqual(['foo', 'bar'])
   })
 
   it("should correctly parse array argument when it's the last argument", () => {
@@ -35,8 +35,8 @@ describe('Parser', () => {
       .forCommand(ArrayCommand)
       .makeContext()
 
-    expect(context.getArgument('beforeArray')).toBe('first')
-    expect(context.getArgument('arrayArg')).toEqual(['foo', 'bar'])
+    expect(context.get('beforeArray')).toBe('first')
+    expect(context.get('arrayArg')).toEqual(['foo', 'bar'])
   })
 
   it('should correctly parse optional argument when input is given', () => {
@@ -54,7 +54,7 @@ describe('Parser', () => {
       .forCommand(OptionalCommand)
       .makeContext()
 
-    expect(context.getArgument('optionalArg')).toBe('foo')
+    expect(context.get('optionalArg')).toBe('foo')
   })
 
   it('should correctly parse optional argument when input is not given', () => {
@@ -72,7 +72,7 @@ describe('Parser', () => {
       .forCommand(OptionalCommand)
       .makeContext()
 
-    expect(context.getArgument('optionalArg')).toBe(undefined)
+    expect(context.get('optionalArg')).toBe(undefined)
   })
 
   it('should correctly parse optional arguments when input is given', () => {
@@ -95,8 +95,8 @@ describe('Parser', () => {
       .forCommand(OptionalCommand)
       .makeContext()
 
-    expect(context.getArgument('optionalArg')).toBe('foo')
-    expect(context.getArgument('secondOptionalArg')).toBe('bar')
+    expect(context.get('optionalArg')).toBe('foo')
+    expect(context.get('secondOptionalArg')).toBe('bar')
   })
 
   it('should correctly parse optional arguments when input for one of the arguments is not given', () => {
@@ -119,8 +119,8 @@ describe('Parser', () => {
       .forCommand(OptionalCommand)
       .makeContext()
 
-    expect(context.getArgument('optionalArg')).toBe('foo')
-    expect(context.getArgument('secondOptionalArg')).toBe(undefined)
+    expect(context.get('optionalArg')).toBe('foo')
+    expect(context.get('secondOptionalArg')).toBe(undefined)
   })
 
   it('should correctly parse optional arguments when input for none of the arguments is not given', () => {
@@ -143,8 +143,8 @@ describe('Parser', () => {
       .forCommand(OptionalCommand)
       .makeContext()
 
-    expect(context.getArgument('optionalArg')).toBe(undefined)
-    expect(context.getArgument('secondOptionalArg')).toBe(undefined)
+    expect(context.get('optionalArg')).toBe(undefined)
+    expect(context.get('secondOptionalArg')).toBe(undefined)
   })
 
   it('should cast to number when argument is numeric', () => {
@@ -160,7 +160,7 @@ describe('Parser', () => {
       .forCommand(NumericCommand)
       .makeContext()
 
-    expect(context.getArgument('numericArg')).toBe(5)
+    expect(context.get('numericArg')).toBe(5)
   })
 
   it('should not cast to number when argument is not numeric', () => {
@@ -174,6 +174,6 @@ describe('Parser', () => {
 
     const context = new Parser('text 5').forCommand(TextCommand).makeContext()
 
-    expect(context.getArgument('textArg')).toBe('5')
+    expect(context.get('textArg')).toBe('5')
   })
 })
