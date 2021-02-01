@@ -28,7 +28,7 @@ export default class Application implements ApplicationContract {
   /**
    * Application logger
    */
-  private readonly logger = new Signale({
+  private readonly $logger = new Signale({
     config: {
       displayTimestamp: true,
     },
@@ -123,7 +123,7 @@ export default class Application implements ApplicationContract {
    * Initializes the Discappp
    */
   private bootstrap() {
-    const logger = this.logger.scope('bootstrap')
+    const logger = this.$logger.scope('bootstrap')
 
     this.loadApp(logger).validateCommands(logger)
 
@@ -212,14 +212,14 @@ export default class Application implements ApplicationContract {
    * Returns the logger
    */
   public getLogger() {
-    return this.logger
+    return this.$logger
   }
 
   /**
    * Ignites the app
    */
   public start() {
-    const appLogger = this.logger.scope('app')
+    const appLogger = this.$logger.scope('app')
 
     /**
      * Bootstraps the app, by loading the commands
