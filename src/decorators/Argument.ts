@@ -1,5 +1,6 @@
+import StaticCommandContract from '../BaseCommand/StaticCommandContract'
 import { isObject, isString } from '../utils/isType'
-import { CommandConstructorContract, ArgumentDecoratorOptions } from '../types'
+import { ArgumentDecoratorOptions } from '../types'
 
 export default function Argument(): PropertyDecorator
 export default function Argument(name: string): PropertyDecorator
@@ -11,7 +12,7 @@ export default function Argument(
   nameOrOptions: string | ArgumentDecoratorOptions = {}
 ) {
   return (target: any, property: string) => {
-    const Command = target.constructor as CommandConstructorContract
+    const Command = target.constructor as StaticCommandContract
     const definition = {
       name: isObject(nameOrOptions)
         ? nameOrOptions.name || property

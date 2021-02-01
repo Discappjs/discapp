@@ -2,15 +2,16 @@ import { Client, MessageEmbed } from 'discord.js'
 import { Signale } from 'signale'
 import path from 'path'
 
-import Invoker from './Invoker'
-import Parser from './Parser'
-import Storage from './Storage'
-import getDirectoryFiles from './utils/getDirectoryFiles'
-import pick from './utils/pick'
-import BadInputException from './exceptions/BadInputException'
-import { DiscappConfig, MessageContract } from './types'
+import Invoker from '../Invoker'
+import Parser from '../Parser'
+import Storage from '../Storage'
+import getDirectoryFiles from '../utils/getDirectoryFiles'
+import pick from '../utils/pick'
+import BadInputException from '../Exceptions/BadInputException'
+import ApplicationContract from './ApplicationContract'
+import { DiscappConfig, MessageContract } from '../types'
 
-export default class Application {
+export default class Application implements ApplicationContract {
   /**
    * The application config
    */
@@ -33,14 +34,19 @@ export default class Application {
     },
   })
 
-  constructor(private readonly $client = new Client()) {}
+  constructor(
+    config: Partial<DiscappConfig>,
+    private readonly $client = new Client()
+  ) {
+    this.setConfig(config)
+  }
 
   /**
    * Start the app with the preferred configs
    *
    * @param config The configuration
    */
-  public withConfig(config: Partial<DiscappConfig>) {
+  private setConfig(config: Partial<DiscappConfig>) {
     const filteredConfig: Partial<DiscappConfig> = pick(
       config,
       Object.keys(this.$config)
@@ -82,7 +88,7 @@ export default class Application {
 
       for (const file of dirFiles) {
         require(file)
-        logger.success('File %s was successfully loaded', path.basename(file))
+        logger.success("File '%s' was successfully loaded", path.basename(file))
       }
     }
 
@@ -93,14 +99,10 @@ export default class Application {
    * Validates all the commands
    */
   private validateCommands(logger: Signale) {
-    for (const Command of Storage.getAllCommands()) {
+    for (const Command of Storage.getCommands()) {
       try {
         Command.validate()
-        logger.success(
-          'Command %s (%s) is valid and ready',
-          Command.name,
-          Command.$name
-        )
+        logger.success("Command '%s' is valid and ready", Command.code)
       } catch (error) {
         /**
          * If the command is invalid, removes the command
@@ -108,12 +110,8 @@ export default class Application {
          */
         Storage.removeCommand(Command)
         logger.error(
-          'Command %s (%s) is valid and ready',
-          Command.name,
-          Command.$name
-        )
-        logger.error(
-          `Command ${Command.name} is invalid, so it can't be used by Discapp.`
+          "Command '%s' is invalid, so it can't be used by Discapp.",
+          Command.code
         )
       }
     }
@@ -124,7 +122,7 @@ export default class Application {
   /**
    * Initializes the Discappp
    */
-  public bootstrap() {
+  private bootstrap() {
     const logger = this.logger.scope('bootstrap')
 
     this.loadApp(logger).validateCommands(logger)
@@ -147,7 +145,7 @@ export default class Application {
       return
     }
 
-    for (const Command of Storage.getAllCommands()) {
+    for (const Command of Storage.getCommands()) {
       try {
         /**
          * Parse the input for the context
@@ -204,16 +202,36 @@ export default class Application {
   }
 
   /**
+   * Returns the client
+   */
+  public getClient() {
+    return this.$client
+  }
+
+  /**
+   * Returns the logger
+   */
+  public getLogger() {
+    return this.logger
+  }
+
+  /**
    * Ignites the app
    */
-  public ignite() {
-    const app = this.logger.scope('app')
+  public start() {
+    const appLogger = this.logger.scope('app')
+
+    /**
+     * Bootstraps the app, by loading the commands
+     * and other dependencies
+     */
+    this.bootstrap()
 
     /**
      * Once the App is running logs
      */
     this.$client.once('ready', () => {
-      app.success('Discapp is running')
+      appLogger.success('Discapp is running')
     })
 
     /**
@@ -227,5 +245,7 @@ export default class Application {
      * Logins into the Discord
      */
     this.$client.login(this.$config.token)
+
+    return this
   }
 }

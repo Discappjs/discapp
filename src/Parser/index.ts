@@ -1,8 +1,9 @@
-import CommandContext from './CommandContext'
-import BadInputException from './exceptions/BadInputException'
-import { CommandConstructorContract } from './types'
+import CommandContext from '../CommandContext'
+import BadInputException from '../Exceptions/BadInputException'
+import ParserContract from './ParserContract'
+import StaticCommandContract from '../BaseCommand/StaticCommandContract'
 
-export default class Parser {
+export default class Parser implements ParserContract {
   /**
    * The name of the input
    */
@@ -16,7 +17,7 @@ export default class Parser {
   /**
    * The command
    */
-  private $command: CommandConstructorContract | null = null
+  private $command: StaticCommandContract | null = null
 
   constructor(input: string) {
     const splittedInput = input.split(' ')
@@ -30,7 +31,7 @@ export default class Parser {
    *
    * @param command The command
    */
-  public forCommand(command: CommandConstructorContract) {
+  public forCommand(command: StaticCommandContract) {
     this.$command = command
 
     return this
@@ -40,7 +41,7 @@ export default class Parser {
    * Return if the input matches the command
    */
   public isValid() {
-    if (this.$commandName === this.$command.$name) {
+    if (this.$commandName === this.$command.code) {
       let i = 0
       for (const { name, type, isRequired } of this.$command.$arguments) {
         const input = this.$arguments[i]
@@ -52,7 +53,7 @@ export default class Parser {
         if (isRequired && !input) {
           throw new BadInputException(
             'MISSING_ARGUMENT',
-            this.$command.$name,
+            this.$command.code,
             name,
             `Argument '${name}' (${i + 1}º) is required`
           )
@@ -67,7 +68,7 @@ export default class Parser {
             'NAN_ARGUMENT',
             this.$command.name,
             name,
-            `Argument '${name}' (#${i +
+            `Argument '${name}' (${i +
               1}º) expects a numeric value, ${input} given`
           )
         }
