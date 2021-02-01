@@ -1,9 +1,9 @@
-import { CommandConstructorContract } from '../types'
+import StaticCommandContract from '../BaseCommand/StaticCommandContract'
 
 function createAssociation(argName: string) {
   return function() {
     return (target: any, property: string) => {
-      const Command = target.constructor as CommandConstructorContract
+      const Command = target.constructor as StaticCommandContract
       Command.boot()
       Command.addAssoc(property, argName || property)
     }
