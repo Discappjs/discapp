@@ -1,13 +1,16 @@
-import BaseCommand from './BaseCommand'
-import CommandContext from './CommandContext'
-import callEach from './utils/callEach'
-import { CommandConstructorContract, InvokerHooks } from './types'
+import CommandContract from '../BaseCommand/CommandContract'
+import StaticCommandContract from '../BaseCommand/StaticCommandContract'
+import CommandContext from '../CommandContext'
+import CommandContextContract from '../CommandContext/CommandContextContract'
+import InvokerContract from './InvokerContract'
+import callEach from '../utils/callEach'
+import { InvokerHooks } from '../types'
 
-export default class Invoker {
+export default class Invoker implements InvokerContract {
   /**
    * The invoker context
    */
-  private $context = new CommandContext()
+  private $context: CommandContextContract = new CommandContext()
 
   /**
    * Invoker hooks
@@ -20,9 +23,9 @@ export default class Invoker {
   /**
    * The command instance
    */
-  private readonly $command: BaseCommand
+  private readonly $command: CommandContract
 
-  constructor(Command: CommandConstructorContract) {
+  constructor(Command: StaticCommandContract) {
     this.$command = new Command()
   }
 
@@ -51,7 +54,7 @@ export default class Invoker {
    * Set the associateds properties in the command instance
    */
   private setAssociatedProperties() {
-    const Command = this.$command.constructor as CommandConstructorContract
+    const Command = this.$command.constructor as StaticCommandContract
 
     for (const [propertyName, argumentName] of Command.$assocs.entries()) {
       const argDefinition = Command.getArgument(argumentName)

@@ -1,6 +1,7 @@
-import { MessageContract } from './types'
+import CommandContextContract from './CommandContextContract'
+import { MessageContract } from '../types'
 
-export default class CommandContext {
+export default class CommandContext implements CommandContextContract {
   /**
    * List of reserved words
    */
@@ -11,7 +12,14 @@ export default class CommandContext {
    */
   private readonly $context = new Map<string, any>()
 
-  constructor(private readonly $content: string = '') {}
+  /**
+   * The original message content
+   */
+  private readonly $content: string
+
+  constructor(content = '') {
+    this.$content = content
+  }
 
   /**
    * The untreated content of the message
@@ -83,6 +91,8 @@ export default class CommandContext {
    */
   public removeArgument(key: string) {
     this.$context.delete(key)
+
+    return this
   }
 
   /**
@@ -104,6 +114,7 @@ export default class CommandContext {
    */
   public clear() {
     this.$context.clear()
-    this.setAuthor(undefined).setChannel(undefined)
+
+    return this
   }
 }
