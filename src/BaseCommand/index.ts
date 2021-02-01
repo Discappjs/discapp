@@ -125,7 +125,12 @@ export default abstract class BaseCommand implements CommandContract {
        */
       const numberOfArgsDef = this.$arguments.length
       const lastArgument = this.$arguments[numberOfArgsDef - 1]
-      let canBeOptional = true
+
+      /**
+       * If the first argument is required, then the following
+       * arguments must also be required
+       */
+      let canBeOptional = !lastArgument.isRequired
 
       /**
        * If the last argument is an array, then can't
