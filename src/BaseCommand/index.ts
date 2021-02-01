@@ -1,16 +1,17 @@
-import InvalidArgumentException from './exceptions/InvalidArgumentException'
-import { ArgumentDescriptor } from './types'
+import InvalidArgumentException from '../Exceptions/InvalidArgumentException'
+import CommandContract from './CommandContract'
+import { ArgumentDescriptor } from '../types'
 
-export default abstract class BaseCommand {
+export default abstract class BaseCommand implements CommandContract {
   /**
    * The command name
    */
-  public static $name = ''
+  public static code = ''
 
   /**
    * The command description
    */
-  public static $description = ''
+  public static description = ''
 
   /**
    * The command arguments
@@ -20,7 +21,7 @@ export default abstract class BaseCommand {
   /**
    * The associations
    */
-  private static $assocs = new Map<string, string>()
+  public static $assocs = new Map<string, string>()
 
   /**
    * Whether the Command was booted
@@ -33,8 +34,8 @@ export default abstract class BaseCommand {
   public static boot() {
     if (!this.$isBooted) {
       this.$arguments = []
-      this.$name = ''
-      this.$description = ''
+      this.code = ''
+      this.description = ''
       this.$assocs = new Map<string, string>()
     }
 
@@ -46,8 +47,8 @@ export default abstract class BaseCommand {
    *
    * @param name The name
    */
-  public static setName(name: string) {
-    this.$name = name
+  public static setCode(name: string) {
+    this.code = name
 
     return this
   }
@@ -59,7 +60,7 @@ export default abstract class BaseCommand {
    */
   public static setDescription(description: string | undefined) {
     if (description) {
-      this.$description = description
+      this.description = description
     }
 
     return this
@@ -144,7 +145,7 @@ export default abstract class BaseCommand {
         if (type === Array) {
           throw new InvalidArgumentException(
             'INVALID_ARGUMENT',
-            this.$name,
+            this.code,
             name,
             `Argument ${name} can't be a array.`
           )
@@ -165,7 +166,7 @@ export default abstract class BaseCommand {
         if (!canBeOptional && !isRequired) {
           throw new InvalidArgumentException(
             'INVALID_ARGUMENT',
-            this.$name,
+            this.code,
             name,
             `Argument ${name} can't be optional. Optional arguments must be at the end or followed only by optional arguments.`
           )
