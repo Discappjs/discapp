@@ -1,4 +1,5 @@
 import Storage from '../Storage'
+import StaticCommandContract from '../BaseCommand/StaticCommandContract'
 import { isObject } from '../utils/isType'
 import { CommandDecoratorOptions } from '../types'
 
@@ -8,16 +9,16 @@ export default function Command(
 ): ClassDecorator
 
 export default function Command(
-  nameOrOptions: string | CommandDecoratorOptions
+  codeOrOptions: string | CommandDecoratorOptions
 ) {
-  return (Command: any) => {
-    const name = isObject(nameOrOptions) ? nameOrOptions.name : nameOrOptions
-    const description = isObject(nameOrOptions)
-      ? nameOrOptions.description
+  return (Command: StaticCommandContract) => {
+    const code = isObject(codeOrOptions) ? codeOrOptions.code : codeOrOptions
+    const description = isObject(codeOrOptions)
+      ? codeOrOptions.description
       : undefined
 
     Command.boot()
-    Command.setName(name).setDescription(description)
+    Command.setCode(code).setDescription(description)
     Storage.addCommand(Command)
   }
 }

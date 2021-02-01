@@ -1,24 +1,55 @@
-import { CommandConstructorContract } from './types'
+import StaticCommandContract from './BaseCommand/StaticCommandContract'
 
 export default class Storage {
   /**
    * The commands
    */
-  private static readonly $commands: CommandConstructorContract[] = []
+  private static $commands: StaticCommandContract[] = []
 
   /**
-   * Returns all the commands
+   * Code-based predicate
    */
-  public static getAllCommands() {
-    return [...this.$commands]
+  private static byCodePredicate = (code: string) => {
+    return (Command: StaticCommandContract) => Command.code === code
+  }
+
+  /**
+   * If true then the Storage will work in development
+   * mode
+   */
+  static __DEV_MODE = false
+
+  /**
+   * Get the command by code
+   */
+  public static getCommand(code: string): StaticCommandContract | undefined {
+    return this.$commands.find(this.byCodePredicate(code))
+  }
+
+  /**
+   * Return all the command if no predicate is passed
+   *
+   * @param predicate The predicate
+   */
+  public static getCommands(
+    predicate: (Command: StaticCommandContract) => boolean = () => true
+  ) {
+    return this.$commands.filter(predicate)
   }
 
   /**
    * Removes the command
    */
-  public static removeCommand(Command: CommandConstructorContract) {
-    const index = this.$commands.indexOf(Command)
-    this.$commands.splice(index, 1)
+  public static removeCommand(Command: StaticCommandContract | string) {
+    if (typeof Command == 'string') {
+      this.$commands = this.$commands.filter(
+        () => !this.byCodePredicate(Command)
+      )
+    } else {
+      const index = this.$commands.indexOf(Command)
+
+      this.$commands.splice(index, 1)
+    }
 
     return this
   }
@@ -28,8 +59,25 @@ export default class Storage {
    *
    * @param command The command
    */
-  public static addCommand(...Command: CommandConstructorContract[]) {
-    this.$commands.push(...Command)
+  public static addCommand(Command: StaticCommandContract) {
+    if (this.getCommand(Command.code)) {
+      if (this.__DEV_MODE) {
+        Storage.removeCommand(Command.name)
+      } else {
+        throw new Error(`Can't be two commands with the same code`)
+      }
+    }
+
+    this.$commands.push(Command)
+
+    return this
+  }
+
+  /**
+   * Clears the storage
+   */
+  public static clear() {
+    this.$commands = []
 
     return this
   }

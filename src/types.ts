@@ -1,13 +1,9 @@
 import { DMChannel, NewsChannel, TextChannel, User } from 'discord.js'
-import BaseCommand from './BaseCommand'
-import CommandContext from './CommandContext'
-
-export interface CommandContract {
-  execute(): any
-}
+import CommandContract from './BaseCommand/CommandContract'
+import CommandContextContract from './CommandContext/CommandContextContract'
 
 export interface CommandDecoratorOptions {
-  name: string
+  code: string
   description: string
 }
 
@@ -45,22 +41,6 @@ export interface InvokerHooks {
 export interface DiscappHooks extends InvokerHooks {}
 
 export type CommandHookFunction = (command: {
-  context: CommandContext
-  descriptor: BaseCommand
+  context: CommandContextContract
+  descriptor: CommandContract
 }) => void
-
-export interface CommandConstructorContract {
-  $name: string
-  $description: string
-  $arguments: ArgumentDescriptor[]
-  $assocs: Map<string, string>
-
-  new (): BaseCommand
-  boot(): void
-  setName(name: string): this
-  setDescription(description: string): this
-  addAssoc(propertyKey: string, argumentKey: string): this
-  addArgument(arg: ArgumentDescriptor): this
-  getArgument(name: string): ArgumentDescriptor | undefined
-  validate(): boolean
-}
