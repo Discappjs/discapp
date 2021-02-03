@@ -7,7 +7,7 @@ describe('Invoker', () => {
   it('should correctly inject the arguments', async () => {
     const context = new CommandContext()
 
-    context.setArgument('foo', 'bar')
+    context.set('foo', 'bar')
 
     @Command('command')
     class FooCommand extends BaseCommand {

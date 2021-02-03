@@ -1,6 +1,6 @@
 import CommandContext from '../CommandContext'
-import BadInputException from '../Exceptions/BadInputException'
 import ParserContract from './ParserContract'
+import BadInputException from '../Exceptions/BadInputException'
 import StaticCommandContract from '../BaseCommand/StaticCommandContract'
 
 export default class Parser implements ParserContract {
@@ -97,22 +97,26 @@ export default class Parser implements ParserContract {
          * values in the argument
          */
         if (type === Array) {
-          context.setArgument(name, this.$arguments.slice(i))
+          context.set(name, this.$arguments.slice(i))
         } else {
           const argValue = this.$arguments[i]
 
+          /**
+           * If ther argument is optional and value is not given,
+           * then continues
+           */
           if (!isRequired && argValue === undefined) {
             ++i
             continue
           }
 
           /**
-           * If the argument is a numeric argument, then
-           * we have to cast it to number
+           * If the argument is a numeric argument, thne we have
+           * to cast it to number
            */
           const value = type === Number ? Number(argValue) : argValue
 
-          context.setArgument(name, value)
+          context.set(name, value)
           ++i
         }
       }

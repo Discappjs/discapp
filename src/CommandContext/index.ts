@@ -55,7 +55,7 @@ export default class CommandContext implements CommandContextContract {
    *
    * @param key The key of the argument
    */
-  public hasArgument(key: string) {
+  public has(key: string) {
     return this.$context.has(key)
   }
 
@@ -65,7 +65,7 @@ export default class CommandContext implements CommandContextContract {
    * @param key The key of the argument
    * @param value The value of the argument
    */
-  public setArgument(key: string, value: any) {
+  public set(key: string, value: any) {
     if (this.reservedWords.includes(key)) {
       throw new Error(`${key} is a reserved word`)
     }
@@ -80,7 +80,7 @@ export default class CommandContext implements CommandContextContract {
    *
    * @param key The key of the argument
    */
-  public getArgument(key: string) {
+  public get(key: string) {
     return this.$context.get(key)
   }
 
@@ -89,7 +89,7 @@ export default class CommandContext implements CommandContextContract {
    *
    * @param key The key of the argument
    */
-  public removeArgument(key: string) {
+  public delete(key: string) {
     this.$context.delete(key)
 
     return this
@@ -99,14 +99,14 @@ export default class CommandContext implements CommandContextContract {
    * Returns the author of the message
    */
   public getAuthor(): MessageContract['author'] | undefined {
-    return this.getArgument('author')
+    return this.get('author')
   }
 
   /**
    * Returns the channel the message has been sent to
    */
   public getChannel(): MessageContract['channel'] | undefined {
-    return this.getArgument('channel')
+    return this.get('channel')
   }
 
   /**

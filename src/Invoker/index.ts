@@ -57,15 +57,26 @@ export default class Invoker implements InvokerContract {
     const Command = this.$command.constructor as StaticCommandContract
 
     for (const [propertyName, argumentName] of Command.$assocs.entries()) {
+      const hasArg = this.$context.has(argumentName)
       const argDefinition = Command.getArgument(argumentName)
-      const hasArg = this.$context.hasArgument(argumentName)
 
-      if (!argDefinition.isRequired && !hasArg) {
+      /**
+       * If there's no argument, but the argument is optional
+       * then we can go to the next iteration
+       */
+      if (!hasArg && !argDefinition.isRequired) {
         continue
       }
 
-      if (hasArg) {
-        const value = this.$context.getArgument(argumentName)
+      /**
+       * Some values are stored in the context in the same space
+       * of the aguments, (see the CommandContext reserverd words)
+       * this way they don't require an argument definition
+       */
+      const value = this.$context.get(argumentName)
+      const isSpecialValue = !hasArg && value
+
+      if (hasArg || isSpecialValue) {
         this.$command.setProperty(propertyName, value)
       } else {
         throw new Error(`Argument ${argumentName} does not exists`)

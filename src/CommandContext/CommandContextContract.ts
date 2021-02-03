@@ -5,10 +5,10 @@ export default interface CommandContextContract {
 
   setAuthor(author: MessageContract['author'] | undefined): this
   setChannel(channel: MessageContract['channel'] | undefined): this
-  hasArgument(key: string): boolean
-  setArgument(key: string, value: any): this
-  getArgument(key: string): any
-  removeArgument(key: string): this
+  has(key: string): boolean
+  set(key: string, value: any): this
+  get(key: string): any
+  delete(key: string): this
   getAuthor(): MessageContract['author'] | undefined
   getChannel(): MessageContract['channel'] | undefined
   clear(): this
