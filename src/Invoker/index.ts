@@ -5,6 +5,7 @@ import CommandContextContract from '../CommandContext/CommandContextContract'
 import InvokerContract from './InvokerContract'
 import callEach from '../utils/callEach'
 import { InvokerHooks } from '../types'
+import ForbiddenCommandException from '../Exceptions/ForbiddenCommandException'
 
 export default class Invoker implements InvokerContract {
   /**
@@ -25,7 +26,13 @@ export default class Invoker implements InvokerContract {
    */
   private readonly $command: CommandContract
 
+  /**
+   * The command
+   */
+  private readonly Command: StaticCommandContract
+
   constructor(Command: any) {
+    this.Command = Command
     this.$command = new Command()
   }
 
@@ -48,6 +55,48 @@ export default class Invoker implements InvokerContract {
     this.$context = context
 
     return this
+  }
+
+  /**
+   * Check if the user has permission for executing this command
+   */
+  private checkPermission() {
+    const member = this.$context.getMember()
+
+    if (member) {
+      for (const $role of this.Command.$roles) {
+        const hasRole = member.roles.cache.find(role => role.name === $role)
+
+        if (!hasRole) {
+          throw new ForbiddenCommandException(
+            'MISSING_ROLE',
+            this.Command.code,
+            $role,
+            `This commands requires you to have the role: '${$role}', but you don't`
+          )
+        }
+      }
+
+      for (const $permission of this.Command.$permissions) {
+        if (!member.hasPermission($permission)) {
+          throw new ForbiddenCommandException(
+            'MISSING_PERMISSION',
+            this.Command.code,
+            $permission,
+            `This commands requires you to have the permission: '${$permission}', but you don't`
+          )
+        }
+      }
+    } else {
+      throw new ForbiddenCommandException(
+        'MISSING_PERMISSION',
+        this.Command.code,
+        'member',
+        `We were unable to verify if you have the permission for executing this command`
+      )
+    }
+
+    return true
   }
 
   /**
@@ -100,6 +149,7 @@ export default class Invoker implements InvokerContract {
     ])
 
     this.setAssociatedProperties()
+    this.checkPermission()
 
     /**
      * Call the global 'afterCommand' hooks. Useful

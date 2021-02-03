@@ -8,6 +8,7 @@ import Storage from '../Storage'
 import getDirectoryFiles from '../utils/getDirectoryFiles'
 import pick from '../utils/pick'
 import BadInputException from '../Exceptions/BadInputException'
+import ForbiddenCommandException from '../Exceptions/ForbiddenCommandException'
 import ApplicationContract from './ApplicationContract'
 import { DiscappConfig, MessageContract } from '../types'
 
@@ -136,7 +137,7 @@ export default class Application implements ApplicationContract {
    * @param message The message
    */
   private async onInput(message: MessageContract) {
-    const { content: originalContent, author, channel } = message
+    const { content: originalContent, author, channel, member } = message
     let content = originalContent
 
     if (content.startsWith(this.$config.prefix)) {
@@ -157,6 +158,7 @@ export default class Application implements ApplicationContract {
             .makeContext()
             .setAuthor(author)
             .setChannel(channel)
+            .setMember(member)
 
           /**
            * Invokes the command with its context and
@@ -187,11 +189,24 @@ export default class Application implements ApplicationContract {
             .setDescription(
               'The message does not match the expected command format'
             )
-            .addField('Command', error.commandName)
+            .addField('Command', error.commandCode)
             .addField('Argument', error.argumentName)
             .addField('Error message', error.message)
             .setColor('#ff6e6c')
-            .setFooter(Date.now())
+            .setTimestamp()
+
+          this.respond(channel, errorMessage)
+        } else if (error instanceof ForbiddenCommandException) {
+          const errorMessage = new MessageEmbed()
+            .setTitle('Error: forbidden')
+            .setDescription(
+              "You don't have the permission for executing this command"
+            )
+            .addField('Command', error.commandCode)
+            .addField('Requires', error.requires)
+            .addField('Error message', error.message)
+            .setColor('#ff6e6c')
+            .setTimestamp()
 
           this.respond(channel, errorMessage)
         } else {

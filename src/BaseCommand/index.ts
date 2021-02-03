@@ -1,3 +1,5 @@
+import { PermissionString } from 'discord.js'
+
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException'
 import CommandContract from './CommandContract'
 import { ArgumentDescriptor } from '../types'
@@ -24,6 +26,16 @@ export default abstract class BaseCommand implements CommandContract {
   public static $assocs = new Map<string, string>()
 
   /**
+   * Command required permissionss
+   */
+  public static $permissions = new Set<PermissionString>()
+
+  /**
+   * Command required roles
+   */
+  public static $roles = new Set<string>()
+
+  /**
    * Whether the Command was booted
    */
   private static $isBooted = false
@@ -37,9 +49,13 @@ export default abstract class BaseCommand implements CommandContract {
       this.code = ''
       this.description = ''
       this.$assocs = new Map<string, string>()
+      this.$roles = new Set<string>()
+      this.$permissions = new Set<PermissionString>()
     }
 
     this.$isBooted = true
+
+    return this
   }
 
   /**
@@ -61,6 +77,31 @@ export default abstract class BaseCommand implements CommandContract {
   public static setDescription(description: string | undefined) {
     if (description) {
       this.description = description
+    }
+
+    return this
+  }
+
+  /**
+   * Set the permissions for the command
+   *
+   * @param permissions The permissions
+   */
+  public static setPermissions(permissions: PermissionString[]) {
+    for (const permission of permissions) {
+      this.$permissions.add(permission)
+    }
+
+    return this
+  }
+  /**
+   * Set the roles for the command
+   *
+   * @param roles The roles
+   */
+  public static setRoles(roles: string[]) {
+    for (const role of roles) {
+      this.$roles.add(role)
     }
 
     return this
