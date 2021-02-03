@@ -11,7 +11,7 @@ import CommandContextContract from './CommandContext/CommandContextContract'
 
 export interface CommandDecoratorOptions {
   code: string
-  description: string
+  description?: string
   roles?: string[]
   permissions?: PermissionString[]
 }
