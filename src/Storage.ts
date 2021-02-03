@@ -1,4 +1,5 @@
 import StaticCommandContract from './BaseCommand/StaticCommandContract'
+import { isString } from './utils/isType'
 
 export default class Storage {
   /**
@@ -41,7 +42,7 @@ export default class Storage {
    * Removes the command
    */
   public static removeCommand(Command: StaticCommandContract | string) {
-    if (typeof Command == 'string') {
+    if (isString(Command)) {
       this.$commands = this.$commands.filter(
         () => !this.byCodePredicate(Command)
       )
@@ -62,9 +63,9 @@ export default class Storage {
   public static addCommand(Command: StaticCommandContract) {
     if (this.getCommand(Command.code)) {
       if (this.__DEV_MODE) {
-        Storage.removeCommand(Command.name)
+        Storage.removeCommand(Command.code)
       } else {
-        throw new Error(`Can't be two commands with the same code`)
+        throw new Error(`Can't have two commands with the same code`)
       }
     }
 
