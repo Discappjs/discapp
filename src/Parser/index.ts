@@ -7,7 +7,7 @@ export default class Parser implements ParserContract {
   /**
    * The name of the input
    */
-  private readonly $commandName: string = ''
+  private readonly $commandCode: string = ''
 
   /**
    * The arguments of the input
@@ -22,7 +22,7 @@ export default class Parser implements ParserContract {
   constructor(private $input: string = '') {
     const splittedInput = $input.split(' ')
 
-    this.$commandName = splittedInput.shift()
+    this.$commandCode = splittedInput.shift()
     this.$arguments = splittedInput
   }
 
@@ -41,7 +41,7 @@ export default class Parser implements ParserContract {
    * Return if the input matches the command
    */
   public isValid() {
-    if (this.$commandName === this.$command.code) {
+    if (this.$commandCode === this.$command.code) {
       let i = 0
       for (const { name, type, isRequired } of this.$command.$arguments) {
         const input = this.$arguments[i]

@@ -12,3 +12,4 @@ function createAssociation(argName: string) {
 
 export const Author = createAssociation('author')
 export const Channel = createAssociation('channel')
+export const Member = createAssociation('member')

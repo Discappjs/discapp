@@ -5,7 +5,7 @@ export default class CommandContext implements CommandContextContract {
   /**
    * List of reserved words
    */
-  private readonly reservedWords = ['channel', 'author']
+  private readonly reservedWords = ['channel', 'author', 'member']
 
   /**
    * The context mapping
@@ -26,6 +26,17 @@ export default class CommandContext implements CommandContextContract {
    */
   get content() {
     return this.$content
+  }
+
+  /**
+   * Sets the member of the message
+   *
+   * @param member The member
+   */
+  public setMember(member: MessageContract['member'] | null) {
+    this.$context.set('member', member)
+
+    return this
   }
 
   /**
@@ -93,6 +104,13 @@ export default class CommandContext implements CommandContextContract {
     this.$context.delete(key)
 
     return this
+  }
+
+  /**
+   * Returns the member of the message
+   */
+  public getMember() {
+    return this.get('member')
   }
 
   /**

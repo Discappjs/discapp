@@ -16,9 +16,16 @@ export default function Command(
     const description = isObject(codeOrOptions)
       ? codeOrOptions.description
       : undefined
+    const roles = isObject(codeOrOptions) ? codeOrOptions.roles || [] : []
+    const permissions = isObject(codeOrOptions)
+      ? codeOrOptions.permissions || []
+      : []
 
     Command.boot()
-    Command.setCode(code).setDescription(description)
+      .setCode(code)
+      .setDescription(description)
+      .setPermissions(permissions)
+      .setRoles(roles)
     Storage.addCommand(Command)
   }
 }

@@ -12,6 +12,7 @@ export { default as CommandContext } from './CommandContext'
 export { default as BaseCommand } from './BaseCommand'
 export { default as Storage } from './Storage'
 export { default as Parser } from './Parser'
+export { default as Invoker } from './Invoker'
 
 /**
  * Types and interfaces
