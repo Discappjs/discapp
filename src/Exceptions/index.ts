@@ -1,7 +1,7 @@
 export default class Exception extends Error {
   constructor(
     public readonly code: string,
-    public readonly commandName: string,
+    public readonly commandCode: string,
     public readonly argumentName: string,
     public readonly message: string
   ) {
