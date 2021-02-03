@@ -60,7 +60,7 @@ export default class Invoker implements InvokerContract {
   /**
    * Check if the user has permission for executing this command
    */
-  private checkPermission() {
+  private checkPermissions() {
     const member = this.$context.getMember()
 
     if (member) {
@@ -87,13 +87,6 @@ export default class Invoker implements InvokerContract {
           )
         }
       }
-    } else {
-      throw new ForbiddenCommandException(
-        'MISSING_PERMISSION',
-        this.Command.code,
-        'member',
-        `We were unable to verify if you have the permission for executing this command`
-      )
     }
 
     return true
@@ -149,7 +142,7 @@ export default class Invoker implements InvokerContract {
     ])
 
     this.setAssociatedProperties()
-    this.checkPermission()
+    this.checkPermissions()
 
     /**
      * Call the global 'afterCommand' hooks. Useful
