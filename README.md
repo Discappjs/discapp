@@ -45,19 +45,13 @@ That's all, your demo is ready to go:
 yarn dev
 ```
 
-The script above will run your application in development mode, with command hot-reloading. You cant test if the application is running by sending:
-
-```
-!ping
-```
-
-In the Discord server you have configured your bot.
+The script above will run your application in development mode, with command hot-reloading. You cant test if the application is running by sending: `!ping` in the Discord server you have configured your bot.
 
 ## Writing your first command
 
 ### Introduction
 
-In Discapp, every command is represented by a single entity that is responsible for handling the input and return an output.
+In Discapp, every command is represented by a single entity that is responsible for handling the input and returning an output.
 
 Every command has a **code**, this code is the identifier of a command and must be unique among the commands.
 
@@ -68,17 +62,17 @@ In this tutorial we will be covering the steps of the creation of a command — 
 - `min` the smallest possible value
 - `max` the biggest possible value
 
-And outputs a random integer value between `min` and `max`.
+And will output a random integer value between the `min` and `max` arguments.
 
 ### Discapp flux
 
-Every message sent by the user is analyzed and handled by Discapp, that invokes the responsible command entity (if it exists). For example, given the user message:
+Every message sent by the user is analyzed and handled by Discapp that invokes the responsible command entity (if it exists). For example, given the user message:
 
 ```
 !random 5 10
 ```
 
-Discapp will analyze the input, first dividing it in parts (`random`, `5`, `10`) The first part is assumed to be the **code** of the command, while the remaining parts are assumed to be the **arguments**.
+Discapp will analyze the input, first dividing it in parts (`random`, `5`, `10`). The first part is assumed to be the **code** of the command, while the remaining parts are assumed to be the **arguments**.
 
 The table bellow may help you understand better:
 
@@ -96,9 +90,9 @@ The table bellow may help you understand better:
 
 ### Declaring the command
 
-Let's start by creating the file that will hold our command implementation. In Discapp, commands have a special directory (by default: `path/to/your/app/commands`), we recommend you to always put your commands there, as they're loaded by default by Discapp.
+Let's start by creating the file that will hold our command implementation. In Discapp, commands have a special directory (by default: `path/to/your/app/src/commands`), we recommend you to always put your commands there, as they're loaded automatically by Discapp.
 
-Create the file `RandomCommand.ts` in your app `commands` directory. Then, let's start by writing our command basic definition:
+So, let's create the file `RandomCommand.ts` in your app `src/commands` directory (or any other directory you've configured it). Let's start by writing our command definition:
 
 ```ts
 import { Command, BaseCommand } from 'discapp'
@@ -107,14 +101,16 @@ import { Command, BaseCommand } from 'discapp'
 export class RandomCommand extends BaseCommand {}
 ```
 
-Notice a couple of things here:
+Some notes about the code above:
 
-1. The `@Command('random')` part is telling Discapp that the class bellow is a command, and its code `random`.
-2. Every command should extends the class `BaseCommand` coming from Discapp.
+1. The `@Command('random')` part is telling Discapp that the class bellow is a command, and its code is `random`.
+2. Every command should extends the class `BaseCommand` coming from Discapp, this is for avoiding you to write a lot of code common to all commands.
+
+After that, we're ready for declaring our command arguments.
 
 ### Declaring the command arguments
 
-Once you have declared your command, the next step is to declare the command arguments. As we defined previouly, our command will take two arguments `min` and `max`, so lets define them:
+Once you have declared your command, the next step is to declare its arguments. As we defined previouly, our command will take two arguments `min` and `max`, so let's define them:
 
 ```ts
 import { Command, BaseCommand, Argument } from 'discapp'
@@ -129,9 +125,9 @@ export class RandomCommand extends BaseCommand {
 }
 ```
 
-See that declaring an argument is as simple as declaring a class property and annotate it with the `@Argument()` decorator. This tells Discapp that the following property should map to an argument.
+See that declaring an argument is as simple as declaring a class property and annotating it with the `@Argument()` decorator. This tells Discapp that the following property should map to an argument.
 
-Notice that the argument decorator doesn't need to receive any information, the arguments will be resolved in the order which they were declared. So, the first argument of the user input will be `min`, and the second will be `max`. The table bellow shows how the arguments are assigned:
+Notice that the argument decorator doesn't need to receive any additional information, unlike the `@Commannd` decorator. Discapp will, by default, assign the arguments in the order they are send by the user to the arguments. The table bellow shows how the arguments are assigned given the user message:
 
 <div align="center">
 
@@ -143,13 +139,13 @@ Notice that the argument decorator doesn't need to receive any information, the 
 
 </div>
 
-You don't need to worry about not receiving an argument or not receiving a numeric argument (as we declared the arguments as of number type), as Discapp will automatically handle all these details for you.
+You don't need to worry about not receiving an argument or not receiving a argument that is not of the type number (as we declared the arguments as of number type), as Discapp will automatically handle all those details for you.
 
 ### Finishing the command
 
-In order to be complete our command must have an public `execute` method that will respond to the user input, in our case it'll return a random number between `min` and `max`.
+In order to be complete, our command must have an public `execute` method that will respond to the user input. In our case it'll return a random number between `min` and `max`.
 
-Lets write the `execute` method:
+So, let's write the `execute` method:
 
 ```ts
 import { Command, BaseCommand, Argument } from 'discapp'
