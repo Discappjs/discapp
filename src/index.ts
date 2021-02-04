@@ -15,6 +15,11 @@ export { default as Parser } from './Parser'
 export { default as Invoker } from './Invoker'
 
 /**
+ * Utilitary
+ */
+export * from './Collections'
+
+/**
  * Types and interfaces
  */
 export { default as ApplicationContract } from './Application/ApplicationContract'

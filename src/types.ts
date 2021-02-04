@@ -6,14 +6,15 @@ import {
   TextChannel,
   User,
 } from 'discord.js'
+import { Collection } from './Collections'
 import CommandContract from './BaseCommand/CommandContract'
 import CommandContextContract from './CommandContext/CommandContextContract'
 
 export interface CommandDecoratorOptions {
   code: string
   description?: string
-  roles?: string[]
-  permissions?: PermissionString[]
+  roles?: string[] | Collection
+  permissions?: PermissionString[] | Collection
 }
 
 export interface ArgumentDescriptor {
