@@ -1,5 +1,6 @@
 import CommandContract from './CommandContract'
 import { ArgumentDescriptor } from '../types'
+import { Collection } from '../Collections'
 import { PermissionString } from 'discord.js'
 
 export default interface StaticCommandContract {
@@ -7,8 +8,8 @@ export default interface StaticCommandContract {
   description: string
   $arguments: ArgumentDescriptor[]
   readonly $assocs: Map<string, string>
-  readonly $roles: Set<string>
-  readonly $permissions: Set<PermissionString>
+  readonly $roles: Collection
+  readonly $permissions: Collection
 
   new (): CommandContract
   boot(): this
@@ -16,8 +17,8 @@ export default interface StaticCommandContract {
   setDescription(description: string): this
   addAssoc(propertyKey: string, argumentKey: string): this
   addArgument(arg: ArgumentDescriptor): this
-  setPermissions(permissions: PermissionString[]): this
-  setRoles(roles: string[]): this
+  setPermissions(permissions: PermissionString[] | Collection): this
+  setRoles(roles: Collection | string[]): this
   getArgument(name: string): ArgumentDescriptor | undefined
   validate(): void
 }

@@ -3,6 +3,7 @@ import { PermissionString } from 'discord.js'
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException'
 import CommandContract from './CommandContract'
 import { ArgumentDescriptor } from '../types'
+import { allOf, Collection } from '../Collections'
 
 export default abstract class BaseCommand implements CommandContract {
   /**
@@ -28,12 +29,12 @@ export default abstract class BaseCommand implements CommandContract {
   /**
    * Command required permissionss
    */
-  public static $permissions = new Set<PermissionString>()
+  public static $permissions: Collection = allOf()
 
   /**
    * Command required roles
    */
-  public static $roles = new Set<string>()
+  public static $roles: Collection = allOf()
 
   /**
    * Whether the Command was booted
@@ -49,8 +50,8 @@ export default abstract class BaseCommand implements CommandContract {
       this.code = ''
       this.description = ''
       this.$assocs = new Map<string, string>()
-      this.$roles = new Set<string>()
-      this.$permissions = new Set<PermissionString>()
+      this.$roles = allOf()
+      this.$permissions = allOf()
     }
 
     this.$isBooted = true
@@ -87,9 +88,11 @@ export default abstract class BaseCommand implements CommandContract {
    *
    * @param permissions The permissions
    */
-  public static setPermissions(permissions: PermissionString[]) {
-    for (const permission of permissions) {
-      this.$permissions.add(permission)
+  public static setPermissions(permissions: PermissionString[] | Collection) {
+    if (Array.isArray(permissions)) {
+      this.$permissions = allOf(...permissions)
+    } else {
+      this.$permissions = permissions
     }
 
     return this
@@ -100,8 +103,10 @@ export default abstract class BaseCommand implements CommandContract {
    * @param roles The roles
    */
   public static setRoles(roles: string[]) {
-    for (const role of roles) {
-      this.$roles.add(role)
+    if (Array.isArray(roles)) {
+      this.$roles = allOf(...roles)
+    } else {
+      this.$roles = roles
     }
 
     return this
