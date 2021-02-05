@@ -61,19 +61,19 @@ export default class Application implements ApplicationContract {
   /**
    * Respond the user input
    *
-   * @param channel The channel
+   * @param message The channel
    * @param response The response
    */
-  private respond(channel: MessageContract['channel'], responses: any) {
+  private respond(message: MessageContract, responses: any) {
     if (Array.isArray(responses)) {
       for (const response of responses) {
-        this.respond(channel, response)
+        this.respond(message, response)
       }
     } else {
       if (typeof responses === 'string') {
-        channel.send(responses)
+        message.reply(responses)
       } else {
-        channel.send({ embed: responses })
+        message.reply({ embed: responses })
       }
     }
   }
@@ -137,7 +137,7 @@ export default class Application implements ApplicationContract {
    * @param message The message
    */
   private async onInput(message: MessageContract) {
-    const { content: originalContent, author, channel, member } = message
+    const { content: originalContent } = message
     let content = originalContent
 
     if (content.startsWith(this.$config.prefix)) {
@@ -154,11 +154,7 @@ export default class Application implements ApplicationContract {
         const parser = new Parser(content).forCommand(Command)
 
         if (parser.isValid()) {
-          const context = parser
-            .makeContext()
-            .setAuthor(author)
-            .setChannel(channel)
-            .setMember(member)
+          const context = parser.makeContext().setMessage(message)
 
           /**
            * Invokes the command with its context and
@@ -179,7 +175,7 @@ export default class Application implements ApplicationContract {
            * it to the channel
            */
           if (response) {
-            this.respond(channel, response)
+            this.respond(message, response)
           }
         }
       } catch (error) {
@@ -195,7 +191,7 @@ export default class Application implements ApplicationContract {
             .setColor('#ff6e6c')
             .setTimestamp()
 
-          this.respond(channel, errorMessage)
+          this.respond(message, errorMessage)
         } else if (error instanceof ForbiddenCommandException) {
           const errorMessage = new MessageEmbed()
             .setTitle('Error: forbidden')
@@ -208,7 +204,7 @@ export default class Application implements ApplicationContract {
             .setColor('#ff6e6c')
             .setTimestamp()
 
-          this.respond(channel, errorMessage)
+          this.respond(message, errorMessage)
         } else {
           throw error
         }

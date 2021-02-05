@@ -12,5 +12,6 @@ export default interface CommandContextContract {
   getAuthor(): MessageContract['author'] | undefined
   getChannel(): MessageContract['channel'] | undefined
   getMember(): MessageContract['member'] | undefined
+  getMessage(): MessageContract | undefined
   clear(): this
 }

@@ -4,8 +4,8 @@ function createAssociation(argName: string) {
   return function() {
     return (target: any, property: string) => {
       const Command = target.constructor as StaticCommandContract
-      Command.boot()
-      Command.addAssoc(property, argName || property)
+
+      Command.boot().addAssoc(property, argName || property)
     }
   }
 }
@@ -13,3 +13,4 @@ function createAssociation(argName: string) {
 export const Author = createAssociation('author')
 export const Channel = createAssociation('channel')
 export const Member = createAssociation('member')
+export const Message = createAssociation('message')
