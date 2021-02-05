@@ -1,3 +1,4 @@
+import Storage from '../Storage'
 import CommandContext from '../CommandContext'
 import ParserContract from './ParserContract'
 import BadInputException from '../Exceptions/BadInputException'
@@ -99,7 +100,7 @@ export default class Parser implements ParserContract {
         if (type === Array) {
           context.set(name, this.$arguments.slice(i))
         } else {
-          const argValue = this.$arguments[i]
+          const argValue: string = this.$arguments[i]
 
           /**
            * If ther argument is optional and value is not given,
@@ -110,13 +111,32 @@ export default class Parser implements ParserContract {
             continue
           }
 
-          /**
-           * If the argument is a numeric argument, thne we have
-           * to cast it to number
+          /***
+           * If the Argument is of type User, then we should
+           * convert it to an Discord.js User instance
            */
-          const value = type === Number ? Number(argValue) : argValue
+          if (type.name === 'User') {
+            if (argValue.startsWith('<@') && argValue.endsWith('>')) {
+              let mention = argValue.slice(2, -1)
 
-          context.set(name, value)
+              if (mention.startsWith('!')) {
+                mention = mention.slice(1)
+              }
+
+              const user = Storage.getClient().users.cache.get(mention)
+
+              context.set(name, user)
+            }
+          } else {
+            /**
+             * If the argument is a numeric argument, thne we have
+             * to cast it to number
+             */
+            const value = type === Number ? Number(argValue) : argValue
+
+            context.set(name, value)
+          }
+
           ++i
         }
       }
