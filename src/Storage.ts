@@ -1,7 +1,14 @@
+import { Client } from 'discord.js'
+
 import StaticCommandContract from './BaseCommand/StaticCommandContract'
 import { isString } from './utils/isType'
 
 export default class Storage {
+  /**
+   * The client
+   */
+  private static $client: Client | undefined = undefined
+
   /**
    * The commands
    */
@@ -19,6 +26,26 @@ export default class Storage {
    * mode
    */
   static __DEV_MODE = false
+
+  /**
+   * Gets the client
+   */
+  public static getClient() {
+    if (this.$client) {
+      return this.$client
+    }
+
+    throw new Error('Client is not defined, is Application already started?')
+  }
+
+  /**
+   * Sets the client
+   */
+  public static setClient(client: Client) {
+    this.$client = client
+
+    return this
+  }
 
   /**
    * Get the command by code
