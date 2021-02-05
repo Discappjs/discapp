@@ -29,6 +29,7 @@ export default function Argument(
     }
 
     Command.boot()
-    Command.addAssoc(property, definition.name).addArgument(definition)
+      .addAssoc(property, definition.name)
+      .addArgument(definition)
   }
 }
