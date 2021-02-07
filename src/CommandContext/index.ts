@@ -5,7 +5,13 @@ export default class CommandContext implements CommandContextContract {
   /**
    * List of reserved words
    */
-  private readonly reservedWords = ['channel', 'author', 'member', 'message']
+  private readonly reservedWords = [
+    'context',
+    'channel',
+    'author',
+    'member',
+    'message',
+  ]
 
   /**
    * The context mapping
@@ -19,6 +25,12 @@ export default class CommandContext implements CommandContextContract {
 
   constructor(content = '') {
     this.$content = content
+
+    /**
+     * Automatically defines the context as itself,
+     * this allow us to get the context in the command
+     */
+    this.$context.set('context', this)
   }
 
   /**
@@ -156,5 +168,12 @@ export default class CommandContext implements CommandContextContract {
     this.$context.clear()
 
     return this
+  }
+
+  /**
+   * Returns if the message was sent from a guild
+   */
+  public isGuild() {
+    return this.getMessage() ? Boolean(this.getMessage().guild) : false
   }
 }
