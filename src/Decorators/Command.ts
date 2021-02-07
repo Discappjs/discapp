@@ -1,18 +1,22 @@
 import Storage from '../Storage'
 import StaticCommandContract from '../BaseCommand/StaticCommandContract'
 import { isObject } from '../utils/isType'
+import inferCode from '../utils/inferCode'
 import { CommandDecoratorOptions } from '../types'
 
+export default function Command(): ClassDecorator
 export default function Command(name: string): ClassDecorator
 export default function Command(
   options: CommandDecoratorOptions
 ): ClassDecorator
 
 export default function Command(
-  codeOrOptions: string | CommandDecoratorOptions
+  codeOrOptions: string | CommandDecoratorOptions = {}
 ) {
   return (Command: StaticCommandContract) => {
-    const code = isObject(codeOrOptions) ? codeOrOptions.code : codeOrOptions
+    const code = isObject(codeOrOptions)
+      ? codeOrOptions.code || inferCode(Command.name)
+      : codeOrOptions
     const description = isObject(codeOrOptions)
       ? codeOrOptions.description
       : undefined
@@ -20,12 +24,16 @@ export default function Command(
     const permissions = isObject(codeOrOptions)
       ? codeOrOptions.permissions || []
       : []
+    const isGuildOnly = isObject(codeOrOptions)
+      ? Boolean(codeOrOptions.isGuildOnly)
+      : false
 
     Command.boot()
       .setCode(code)
       .setDescription(description)
       .setPermissions(permissions)
       .setRoles(roles)
+      .setGuildOnly(isGuildOnly)
     Storage.addCommand(Command)
   }
 }

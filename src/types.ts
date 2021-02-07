@@ -4,10 +4,11 @@ import CommandContract from './BaseCommand/CommandContract'
 import CommandContextContract from './CommandContext/CommandContextContract'
 
 export interface CommandDecoratorOptions {
-  code: string
+  code?: string
   description?: string
   roles?: string[] | Collection
   permissions?: PermissionString[] | Collection
+  isGuildOnly?: boolean
 }
 
 export interface ArgumentDescriptor {

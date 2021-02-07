@@ -14,4 +14,5 @@ export default interface CommandContextContract {
   getMember(): MessageContract['member'] | undefined
   getMessage(): MessageContract | undefined
   clear(): this
+  isGuild(): boolean
 }
