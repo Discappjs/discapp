@@ -42,6 +42,11 @@ export default abstract class BaseCommand implements CommandContract {
   private static $isBooted = false
 
   /**
+   * Whether the Command is guild only
+   */
+  public static $guildOnly = false
+
+  /**
    * Boots the Command
    */
   public static boot() {
@@ -55,6 +60,15 @@ export default abstract class BaseCommand implements CommandContract {
     }
 
     this.$isBooted = true
+
+    return this
+  }
+
+  /**
+   * Sets the command as guild only
+   */
+  public static setGuildOnly(guildOnly: boolean) {
+    this.$guildOnly = guildOnly
 
     return this
   }

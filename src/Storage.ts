@@ -1,18 +1,17 @@
-import { Client } from 'discord.js'
-
+import ApplicationContract from './Application/ApplicationContract'
 import StaticCommandContract from './BaseCommand/StaticCommandContract'
 import { isString } from './utils/isType'
 
 export default class Storage {
   /**
-   * The client
-   */
-  private static $client: Client | undefined = undefined
-
-  /**
    * The commands
    */
   private static $commands: StaticCommandContract[] = []
+
+  /**
+   * The application
+   */
+  private static $app: ApplicationContract | undefined
 
   /**
    * Code-based predicate
@@ -28,23 +27,23 @@ export default class Storage {
   static __DEV_MODE = false
 
   /**
-   * Gets the client
+   * Sets the app
    */
-  public static getClient() {
-    if (this.$client) {
-      return this.$client
-    }
+  public static setApp(app: ApplicationContract) {
+    this.$app = app
 
-    throw new Error('Client is not defined, is Application already started?')
+    return this
   }
 
   /**
-   * Sets the client
+   * Get the app
    */
-  public static setClient(client: Client) {
-    this.$client = client
+  public static getApp() {
+    if (this.$app) {
+      return this.$app
+    }
 
-    return this
+    throw new Error('Application not found, was application started?')
   }
 
   /**

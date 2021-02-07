@@ -6,6 +6,7 @@ import {
   Invoker,
   allOf,
   oneOf,
+  CommandContextContract,
 } from '../src'
 
 @Command({
@@ -61,6 +62,14 @@ class AllOfRoleCommand extends BaseCommand {
   roles: oneOf('admin', 'mantainer'),
 })
 class OneOfRoleCommand extends BaseCommand {
+  public execute() {}
+}
+
+@Command({
+  code: 'guild-only',
+  isGuildOnly: true,
+})
+class GuildOnlyCommand extends BaseCommand {
   public execute() {}
 }
 
@@ -265,6 +274,40 @@ describe('Roles and permisssions', () => {
       return expect(
         new Invoker(AllOfPermissionCommannd).withContext(context).invoke()
       ).resolves.not.toThrow()
+    })
+  })
+
+  describe('Guild-only', () => {
+    it('should not allow to execute guild-only command from outside a guild', () => {
+      const FakeContext = {
+        getMember() {
+          return {}
+        },
+
+        isGuild() {
+          return true
+        },
+      } as CommandContextContract
+
+      return expect(
+        new Invoker(GuildOnlyCommand).withContext(FakeContext).invoke()
+      ).resolves.not.toThrow()
+    })
+
+    it('should not allow to execute guild-only command from outside a guild', () => {
+      const FakeContext = {
+        getMember() {
+          return {}
+        },
+
+        isGuild() {
+          return false
+        },
+      } as CommandContextContract
+
+      return expect(
+        new Invoker(GuildOnlyCommand).withContext(FakeContext).invoke()
+      ).rejects.toThrow()
     })
   })
 })

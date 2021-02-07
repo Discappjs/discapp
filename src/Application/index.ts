@@ -40,7 +40,7 @@ export default class Application implements ApplicationContract {
     private readonly $client = new Client()
   ) {
     this.setConfig(config)
-    Storage.setClient($client)
+    Storage.setApp(this)
   }
 
   /**

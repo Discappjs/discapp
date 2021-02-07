@@ -54,7 +54,7 @@ export default class Invoker implements InvokerContract {
    *
    * @param context The context
    */
-  public withContext(context: CommandContext) {
+  public withContext(context: CommandContextContract) {
     this.$context = context
 
     return this
@@ -200,16 +200,32 @@ export default class Invoker implements InvokerContract {
   }
 
   /**
+   * Throws if command is guild only but context isn't
+   */
+  private guildMatches() {
+    if (this.Command.$guildOnly !== this.$context.isGuild()) {
+      throw new ForbiddenCommandException(
+        'GUILD_ONLY_COMMAND',
+        this.Command.code,
+        'guild',
+        `The command you're trying to execute is assigned as guild-only, but you trying to execute it from outside a guild.`
+      )
+    }
+
+    return true
+  }
+
+  /**
    * Check if the user has permission for executing this command
    */
   private canExecute() {
     const member = this.$context.getMember()
     const { $roles, $permissions } = this.Command
-
     const hasRoles = this.checkRoles(member, $roles)
     const hasPermissions = this.checkPermissions(member, $permissions)
+    const guildMatches = this.guildMatches()
 
-    return hasRoles && hasPermissions
+    return hasRoles && hasPermissions && guildMatches
   }
 
   /**
