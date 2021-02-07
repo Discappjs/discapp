@@ -123,7 +123,9 @@ export default class Parser implements ParserContract {
                 mention = mention.slice(1)
               }
 
-              const user = Storage.getClient().users.cache.get(mention)
+              const user = Storage.getApp()
+                .getClient()
+                .users.cache.get(mention)
 
               context.set(name, user)
             }
