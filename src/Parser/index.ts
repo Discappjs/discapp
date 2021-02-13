@@ -3,7 +3,6 @@ import CommandContext from '../CommandContext'
 import ParserContract from './ParserContract'
 import BadInputException from '../Exceptions/BadInputException'
 import StaticCommandContract from '../BaseCommand/StaticCommandContract'
-
 export default class Parser implements ParserContract {
   /**
    * The name of the input
@@ -70,7 +69,7 @@ export default class Parser implements ParserContract {
             this.$command.name,
             name,
             `Argument '${name}' (${i +
-              1}º) expects a numeric value, ${input} given`
+              1}º) expects a numeric value, '${input}' given`
           )
         }
 
@@ -128,6 +127,21 @@ export default class Parser implements ParserContract {
                 .users.cache.get(mention)
 
               context.set(name, user)
+            } else {
+              /**
+               * If the mention is not valid, then we must warn the user.
+               *
+               * Mention arguments can only be validated at execution
+               * time, otherwise we would have to check twice if the
+               * user is present in the users cache.
+               */
+              throw new BadInputException(
+                'ARGUMENT_IS_NOT_A_MENSION',
+                this.$command.code,
+                name,
+                `Argument '${name}' (${i +
+                  1}º) expected a mention as value, received: '${argValue}'`
+              )
             }
           } else {
             /**
