@@ -203,7 +203,7 @@ export default class Invoker implements InvokerContract {
    * Throws if command is guild only but context isn't
    */
   private guildMatches() {
-    if (this.Command.$guildOnly !== this.$context.isGuild()) {
+    if (this.Command.$guildOnly && !this.$context.isGuild()) {
       throw new ForbiddenCommandException(
         'GUILD_ONLY_COMMAND',
         this.Command.code,
