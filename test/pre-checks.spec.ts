@@ -73,6 +73,13 @@ class GuildOnlyCommand extends BaseCommand {
   public execute() {}
 }
 
+@Command({
+  code: 'not-guild-only',
+})
+class NotGuildOnlyCommand extends BaseCommand {
+  public execute() {}
+}
+
 describe('Roles and permisssions', () => {
   describe('Roles', () => {
     it('should allow if user have the role', () => {
@@ -278,6 +285,22 @@ describe('Roles and permisssions', () => {
   })
 
   describe('Guild-only', () => {
+    it('should allow to execute not guild-only command from outside a guild', () => {
+      const FakeContext = {
+        getMember() {
+          return {}
+        },
+
+        isGuild() {
+          return false
+        },
+      } as CommandContextContract
+
+      return expect(
+        new Invoker(NotGuildOnlyCommand).withContext(FakeContext).invoke()
+      ).resolves.not.toThrow()
+    })
+
     it('should not allow to execute guild-only command from outside a guild', () => {
       const FakeContext = {
         getMember() {
