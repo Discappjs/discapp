@@ -45,7 +45,7 @@ describe('Input validation', () => {
 
     expect(() =>
       new Parser('numeric nan').forCommand(NumericArgument).isValid()
-    ).toThrow("Argument 'first' (1º) expects a numeric value, nan given")
+    ).toThrow("Argument 'first' (1º) expects a numeric value, 'nan' given")
   })
 
   it('should return false when code does not  match', () => {
