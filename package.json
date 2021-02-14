@@ -8,18 +8,15 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=14"
   },
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test",
     "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
+    "prepare": "tsdx build"
   },
-  "peerDependencies": {},
   "husky": {
     "hooks": {
       "pre-commit": "tsdx lint"
@@ -32,12 +29,13 @@
     "trailingComma": "es5"
   },
   "name": "discapp",
-  "author": "Jota",
+  "author": "Jota Júnior <jjunior@protonmail.ch>",
   "module": "dist/discapp.esm.js",
+  "peerDependencies": {
+    "discord.js": "^12.5.1"
+  },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^4.9.1",
     "husky": "^4.3.8",
-    "size-limit": "^4.9.1",
     "ts-node": "^9.1.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.1.0",
