@@ -14,13 +14,6 @@ export default class Storage {
   private static $app: ApplicationContract | undefined
 
   /**
-   * Code-based predicate
-   */
-  private static byCodePredicate = (code: string) => {
-    return (Command: StaticCommandContract) => Command.code === code
-  }
-
-  /**
    * If true then the Storage will work in development
    * mode
    */
@@ -50,7 +43,9 @@ export default class Storage {
    * Get the command by code
    */
   public static getCommand(code: string): StaticCommandContract | undefined {
-    return this.$commands.find(this.byCodePredicate(code))
+    return this.$commands.find(
+      (Command: StaticCommandContract) => Command.code === code
+    )
   }
 
   /**
@@ -69,9 +64,9 @@ export default class Storage {
    */
   public static removeCommand(Command: StaticCommandContract | string) {
     if (isString(Command)) {
-      this.$commands = this.$commands.filter(
-        () => !this.byCodePredicate(Command)
-      )
+      this.$commands = this.$commands.filter(CommandToFilter => {
+        return CommandToFilter.code != Command
+      })
     } else {
       const index = this.$commands.indexOf(Command)
 

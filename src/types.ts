@@ -27,10 +27,10 @@ export interface ArgumentDecoratorOptions {
 export interface MessageContract extends Message {}
 
 export interface DiscappConfig {
-  commandsDirectory: string
-  token: string
+  readonly commandsDirectory: string
+  readonly token: string
   hooks: DiscappHooks
-  prefix: string
+  readonly prefix: string
 }
 
 export interface InvokerHooks {

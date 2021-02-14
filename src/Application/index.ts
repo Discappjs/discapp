@@ -10,6 +10,7 @@ import pick from '../utils/pick'
 import BadInputException from '../Exceptions/BadInputException'
 import ForbiddenCommandException from '../Exceptions/ForbiddenCommandException'
 import ApplicationContract from './ApplicationContract'
+import { isString } from '../utils/isType'
 import { DiscappConfig, MessageContract } from '../types'
 
 export default class Application implements ApplicationContract {
@@ -44,6 +45,13 @@ export default class Application implements ApplicationContract {
   }
 
   /**
+   * Returns the Application config
+   */
+  public getConfig() {
+    return this.$config
+  }
+
+  /**
    * Start the app with the preferred configs
    *
    * @param config The configuration
@@ -71,10 +79,12 @@ export default class Application implements ApplicationContract {
         this.respond(message, response)
       }
     } else {
-      if (typeof responses === 'string') {
-        message.reply(responses)
+      const response = responses
+
+      if (isString(response)) {
+        message.reply(response)
       } else {
-        message.reply({ embed: responses })
+        message.reply({ embed: response })
       }
     }
   }
