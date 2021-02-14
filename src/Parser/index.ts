@@ -3,6 +3,7 @@ import CommandContext from '../CommandContext'
 import ParserContract from './ParserContract'
 import BadInputException from '../Exceptions/BadInputException'
 import StaticCommandContract from '../BaseCommand/StaticCommandContract'
+
 export default class Parser implements ParserContract {
   /**
    * The name of the input
