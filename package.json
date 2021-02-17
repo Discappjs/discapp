@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.0.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -29,6 +29,7 @@
     "trailingComma": "es5"
   },
   "name": "discapp",
+  "description": "The framework for rapidly building Discord bots",
   "author": "Jota Júnior <jjunior@protonmail.ch>",
   "module": "dist/discapp.esm.js",
   "peerDependencies": {
@@ -47,5 +48,8 @@
     "discord.js": "^12.5.1",
     "reflect-metadata": "^0.1.13",
     "signale": "^1.4.0"
+  },
+  "np": {
+    "message": "Releases v%s"
   }
 }
