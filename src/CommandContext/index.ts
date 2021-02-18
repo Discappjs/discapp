@@ -11,6 +11,7 @@ export default class CommandContext implements CommandContextContract {
     'author',
     'member',
     'message',
+    'guild',
   ]
 
   /**
@@ -51,6 +52,7 @@ export default class CommandContext implements CommandContextContract {
     this.setAuthor(message.author)
       .setChannel(message.channel)
       .setMember(message.member)
+      .setGuild(message.guild)
 
     return this
   }
@@ -84,6 +86,17 @@ export default class CommandContext implements CommandContextContract {
    */
   public setChannel(channel: MessageContract['channel'] | undefined) {
     this.$context.set('channel', channel)
+
+    return this
+  }
+
+  /**
+   * Sets the guild
+   *
+   * @param guild The guild
+   */
+  public setGuild(guild: MessageContract['guild'] | undefined) {
+    this.$context.set('guild', guild)
 
     return this
   }
@@ -162,6 +175,13 @@ export default class CommandContext implements CommandContextContract {
   }
 
   /**
+   * Returns the guild
+   */
+  public getGuild(): MessageContract['guild'] | undefined {
+    return this.get('guild')
+  }
+
+  /**
    * Clears the context
    */
   public clear() {
@@ -174,6 +194,6 @@ export default class CommandContext implements CommandContextContract {
    * Returns if the message was sent from a guild
    */
   public isGuild() {
-    return this.getMessage() ? Boolean(this.getMessage().guild) : false
+    return Boolean(this.getGuild())
   }
 }
