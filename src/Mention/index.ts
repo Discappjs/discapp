@@ -15,11 +15,24 @@ export default class Mention extends fakeUser() {
 
     return new Proxy(this, {
       get(target: any, key: string) {
-        return key in target.user ? target.user[key] : target[key]
+        if (key === 'user') {
+          return target.user
+        }
+
+        if (target.user[key]) {
+          return typeof target.user[key] === 'function'
+            ? target.user[key].bind(target.user)
+            : target.user[key]
+        }
+
+        return target[key]
       },
     })
   }
 
+  /**
+   * Return the mentioned user as a guild member
+   */
   public asMember() {
     return this.$context.getGuild().members.fetch(this.id)
   }
