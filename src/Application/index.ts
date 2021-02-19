@@ -10,7 +10,7 @@ import pick from '../utils/pick'
 import BadInputException from '../Exceptions/BadInputException'
 import ForbiddenCommandException from '../Exceptions/ForbiddenCommandException'
 import ApplicationContract from './ApplicationContract'
-import { isString } from '../utils/isType'
+import { isObject } from '../utils/isType'
 import { DiscappConfig, MessageContract } from '../types'
 
 export default class Application implements ApplicationContract {
@@ -81,10 +81,10 @@ export default class Application implements ApplicationContract {
     } else {
       const response = responses
 
-      if (isString(response)) {
-        message.reply(response)
-      } else {
+      if (isObject(response)) {
         message.reply({ embed: response })
+      } else {
+        message.reply(String(response))
       }
     }
   }
