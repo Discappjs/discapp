@@ -9,6 +9,8 @@ export interface CommandDecoratorOptions {
   roles?: string[] | Collection
   permissions?: PermissionString[] | Collection
   isGuildOnly?: boolean
+  clientPermissions?: PermissionString[] | Collection
+  clientRoles?: string[] | Collection
 }
 
 export interface ArgumentDescriptor {

@@ -156,7 +156,7 @@ export default class Invoker implements InvokerContract {
             'MISSING_ROLE',
             this.Command.code,
             requiredRoles,
-            `This command required you to have the roles: ${requiredRoles}, but you don't`
+            `This command requires ${`<@!${member.user.id}>`} to have the roles: ${requiredRoles}, but it don't`
           )
         }
       }
@@ -192,7 +192,7 @@ export default class Invoker implements InvokerContract {
         'MISSING_ROLE',
         this.Command.code,
         requiredRoles,
-        `This command required you to have one of the roles: ${requiredRoles}, but you don't have any`
+        `This command requires ${`<@!${member.user.id}>`} to have one of the roles: ${requiredRoles}, but it doesn't have any`
       )
     }
 
@@ -220,12 +220,29 @@ export default class Invoker implements InvokerContract {
    */
   private canExecute() {
     const member = this.$context.getMember()
-    const { $roles, $permissions } = this.Command
+    const client = this.$context.getGuild().me
+    const {
+      $roles,
+      $permissions,
+      $clientRoles,
+      $clientPermissions,
+    } = this.Command
     const hasRoles = this.checkRoles(member, $roles)
     const hasPermissions = this.checkPermissions(member, $permissions)
+    const hasClientPermissions = this.checkPermissions(
+      client,
+      $clientPermissions
+    )
+    const hasClientRoles = this.checkRoles(client, $clientRoles)
     const guildMatches = this.guildMatches()
 
-    return hasRoles && hasPermissions && guildMatches
+    return (
+      hasRoles &&
+      hasPermissions &&
+      hasClientPermissions &&
+      hasClientRoles &&
+      guildMatches
+    )
   }
 
   /**
@@ -284,8 +301,7 @@ export default class Invoker implements InvokerContract {
 
     try {
       /**
-       * Ensures the user can execute this command, otherwise
-       * throws an error
+       * Ensures that the command can be executed
        */
       this.canExecute()
 

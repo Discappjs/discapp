@@ -27,6 +27,12 @@ export default function Command(
     const isGuildOnly = isObject(codeOrOptions)
       ? Boolean(codeOrOptions.isGuildOnly)
       : false
+    const clientPermissions = isObject(codeOrOptions)
+      ? codeOrOptions.clientPermissions || []
+      : []
+    const clientRoles = isObject(codeOrOptions)
+      ? codeOrOptions.clientRoles || []
+      : []
 
     Command.boot()
       .setCode(code)
@@ -34,6 +40,8 @@ export default function Command(
       .setPermissions(permissions)
       .setRoles(roles)
       .setGuildOnly(isGuildOnly)
+      .setClientPermissions(clientPermissions)
+      .setClientRoles(clientRoles)
     Storage.addCommand(Command)
   }
 }

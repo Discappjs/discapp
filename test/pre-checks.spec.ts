@@ -1,13 +1,6 @@
-import { GuildMember, PermissionString } from 'discord.js'
-import {
-  BaseCommand,
-  Command,
-  CommandContext,
-  Invoker,
-  allOf,
-  oneOf,
-  CommandContextContract,
-} from '../src'
+import { PermissionString } from 'discord.js'
+import { BaseCommand, Command, Invoker, allOf, oneOf } from '../src'
+import { makeFakeContext, makeFakeMember } from './helpers/factories'
 
 @Command({
   code: 'permission',
@@ -80,20 +73,49 @@ class NotGuildOnlyCommand extends BaseCommand {
   public execute() {}
 }
 
-describe('Roles and permisssions', () => {
-  describe('Roles', () => {
-    it('should allow if user have the role', () => {
-      const context = new CommandContext()
+@Command({
+  clientRoles: ['admin'],
+})
+class ClientRole extends BaseCommand {
+  public execute() {}
+}
 
-      context.setMember(({
-        roles: {
-          cache: [
-            {
-              name: 'admin',
-            },
-          ],
-        },
-      } as unknown) as GuildMember)
+@Command({
+  clientRoles: allOf('admin', 'moderator'),
+})
+class AllOfClientRole extends BaseCommand {
+  public execute() {}
+}
+
+@Command({
+  clientRoles: oneOf('admin', 'moderator'),
+})
+class OneOfClientRole extends BaseCommand {
+  public execute() {}
+}
+
+@Command({
+  clientPermissions: allOf<PermissionString>('SEND_MESSAGES', 'ADD_REACTIONS'),
+})
+class AllOfClientPermission extends BaseCommand {
+  public execute() {}
+}
+
+@Command({
+  clientPermissions: oneOf<PermissionString>('ADD_REACTIONS'),
+})
+class OneOfClientPermission extends BaseCommand {
+  public execute() {}
+}
+
+describe('Roles and permisssions', () => {
+  describe('User Roles', () => {
+    it('should allow if user have the role', () => {
+      const context = makeFakeContext({
+        member: makeFakeMember({
+          roles: ['admin'],
+        }),
+      })
 
       return expect(
         new Invoker(RoleCommand).withContext(context).invoke()
@@ -101,27 +123,7 @@ describe('Roles and permisssions', () => {
     })
 
     it("should throw if user doesn't have the role", () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        roles: {
-          cache: [],
-        },
-      } as unknown) as GuildMember)
-
-      return expect(
-        new Invoker(RoleCommand).withContext(context).invoke()
-      ).rejects.toThrow()
-    })
-
-    it("should throw if user doesn't have the role", () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        roles: {
-          cache: [],
-        },
-      } as unknown) as GuildMember)
+      const context = makeFakeContext()
 
       return expect(
         new Invoker(RoleCommand).withContext(context).invoke()
@@ -129,17 +131,11 @@ describe('Roles and permisssions', () => {
     })
 
     it("should throw if user doesn't have one of the roles", () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        roles: {
-          cache: [
-            {
-              name: 'adminn',
-            },
-          ],
-        },
-      } as unknown) as GuildMember)
+      const context = makeFakeContext({
+        member: makeFakeMember({
+          roles: ['admin'],
+        }),
+      })
 
       return expect(
         new Invoker(MultipleRoleCommand).withContext(context).invoke()
@@ -147,17 +143,11 @@ describe('Roles and permisssions', () => {
     })
 
     it("should throw if user doesn't have one of roles assigned as allOf", () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        roles: {
-          cache: [
-            {
-              name: 'admin',
-            },
-          ],
-        },
-      } as unknown) as GuildMember)
+      const context = makeFakeContext({
+        member: makeFakeMember({
+          roles: ['admin'],
+        }),
+      })
 
       return expect(
         new Invoker(AllOfRoleCommand).withContext(context).invoke()
@@ -165,20 +155,11 @@ describe('Roles and permisssions', () => {
     })
 
     it('should allow if user have all of roles assigned as allOf', () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        roles: {
-          cache: [
-            {
-              name: 'admin',
-            },
-            {
-              name: 'mantainer',
-            },
-          ],
-        },
-      } as unknown) as GuildMember)
+      const context = makeFakeContext({
+        member: makeFakeMember({
+          roles: ['admin', 'mantainer'],
+        }),
+      })
 
       return expect(
         new Invoker(AllOfRoleCommand).withContext(context).invoke()
@@ -186,17 +167,11 @@ describe('Roles and permisssions', () => {
     })
 
     it('should allow if user has at leat one of the roles assigned as oneOf', () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        roles: {
-          cache: [
-            {
-              name: 'admin',
-            },
-          ],
-        },
-      } as unknown) as GuildMember)
+      const context = makeFakeContext({
+        member: makeFakeMember({
+          roles: ['admin'],
+        }),
+      })
 
       return expect(
         new Invoker(OneOfRoleCommand).withContext(context).invoke()
@@ -204,13 +179,7 @@ describe('Roles and permisssions', () => {
     })
 
     it("should throw if user doesn't has at leat any of the roles assigned as oneOf", () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        roles: {
-          cache: [],
-        },
-      } as unknown) as GuildMember)
+      const context = makeFakeContext()
 
       return expect(
         new Invoker(OneOfRoleCommand).withContext(context).invoke()
@@ -218,13 +187,15 @@ describe('Roles and permisssions', () => {
     })
   })
 
-  describe('Permission', () => {
+  describe('User Permissions', () => {
     it('should allow if user have the permission', () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        hasPermission: () => true,
-      } as unknown) as GuildMember)
+      const context = makeFakeContext({
+        member: makeFakeMember({
+          hasPermission() {
+            return true
+          },
+        }),
+      })
 
       return expect(
         new Invoker(PermissionCommand).withContext(context).invoke()
@@ -232,11 +203,13 @@ describe('Roles and permisssions', () => {
     })
 
     it("should throw if user does'nt have the permission", () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        hasPermission: () => false,
-      } as unknown) as GuildMember)
+      const context = makeFakeContext({
+        member: makeFakeMember({
+          hasPermission() {
+            return false
+          },
+        }),
+      })
 
       return expect(
         new Invoker(PermissionCommand).withContext(context).invoke()
@@ -244,13 +217,13 @@ describe('Roles and permisssions', () => {
     })
 
     it("should throw if user does'nt have one of the permissions", () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        hasPermission: (permission: PermissionString) => {
-          return permission === 'ADD_REACTIONS' ? false : true
-        },
-      } as unknown) as GuildMember)
+      const context = makeFakeContext({
+        member: makeFakeMember({
+          hasPermission(permission: PermissionString) {
+            return permission === 'ADD_REACTIONS' ? false : true
+          },
+        }),
+      })
 
       return expect(
         new Invoker(MultiplePermissionCommand).withContext(context).invoke()
@@ -258,25 +231,21 @@ describe('Roles and permisssions', () => {
     })
 
     it("should throw if user does'nt have one of the permissions assigned as allOf", () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        hasPermission: (permission: PermissionString) => {
-          return permission === 'ADD_REACTIONS' ? false : true
-        },
-      } as unknown) as GuildMember)
+      const context = makeFakeContext({
+        member: makeFakeMember({
+          hasPermission(permission: PermissionString) {
+            return permission === 'ADD_REACTIONS' ? false : true
+          },
+        }),
+      })
 
       return expect(
         new Invoker(AllOfPermissionCommannd).withContext(context).invoke()
       ).rejects.toThrow()
     })
 
-    it('should allow if user has all tthe permissions assigned as allOf', () => {
-      const context = new CommandContext()
-
-      context.setMember(({
-        hasPermission: () => true,
-      } as unknown) as GuildMember)
+    it('should allow if user has all the permissions assigned as allOf', () => {
+      const context = makeFakeContext()
 
       return expect(
         new Invoker(AllOfPermissionCommannd).withContext(context).invoke()
@@ -286,15 +255,9 @@ describe('Roles and permisssions', () => {
 
   describe('Guild-only', () => {
     it('should allow to execute not guild-only command from outside a guild', () => {
-      const FakeContext = {
-        getMember() {
-          return {}
-        },
-
-        isGuild() {
-          return false
-        },
-      } as CommandContextContract
+      const FakeContext = makeFakeContext({
+        isGuild: false,
+      })
 
       return expect(
         new Invoker(NotGuildOnlyCommand).withContext(FakeContext).invoke()
@@ -302,34 +265,152 @@ describe('Roles and permisssions', () => {
     })
 
     it('should not allow to execute guild-only command from outside a guild', () => {
-      const FakeContext = {
-        getMember() {
-          return {}
-        },
-
-        isGuild() {
-          return true
-        },
-      } as CommandContextContract
+      const FakeContext = makeFakeContext({
+        isGuild: false,
+      })
 
       return expect(
         new Invoker(GuildOnlyCommand).withContext(FakeContext).invoke()
+      ).rejects.toThrow()
+    })
+  })
+
+  describe('Client Roles', () => {
+    it('should allow invoking a command if client have the role', () => {
+      const context = makeFakeContext({
+        client: makeFakeMember({
+          roles: ['admin'],
+        }),
+      })
+
+      return expect(
+        new Invoker(ClientRole).withContext(context).invoke()
       ).resolves.not.toThrow()
     })
 
-    it('should not allow to execute guild-only command from outside a guild', () => {
-      const FakeContext = {
-        getMember() {
-          return {}
-        },
+    it('should throw if one of the roles assigned as allOf is missing', () => {
+      const firstContext = makeFakeContext({
+        client: makeFakeMember({
+          roles: ['admin'],
+        }),
+      })
+      const secondContext = makeFakeContext({
+        client: makeFakeMember({
+          roles: ['moderator'],
+        }),
+      })
 
-        isGuild() {
-          return false
-        },
-      } as CommandContextContract
+      expect(
+        new Invoker(AllOfClientRole).withContext(firstContext).invoke()
+      ).rejects.toThrow()
+      expect(
+        new Invoker(AllOfClientRole).withContext(secondContext).invoke()
+      ).rejects.toThrow()
+    })
 
-      return expect(
-        new Invoker(GuildOnlyCommand).withContext(FakeContext).invoke()
+    it('should allow if all roles assigned as allOf exists', () => {
+      const context = makeFakeContext({
+        client: makeFakeMember({
+          roles: ['admin', 'moderator'],
+        }),
+      })
+
+      expect(
+        new Invoker(AllOfClientRole).withContext(context).invoke()
+      ).resolves.not.toThrow()
+    })
+
+    it('should allow if one of roles assigned as oneOf exists', () => {
+      const firstContext = makeFakeContext({
+        client: makeFakeMember({
+          roles: ['admin'],
+        }),
+      })
+      const secondContext = makeFakeContext({
+        client: makeFakeMember({
+          roles: ['moderator'],
+        }),
+      })
+
+      expect(
+        new Invoker(OneOfClientRole).withContext(firstContext).invoke()
+      ).resolves.not.toThrow()
+      expect(
+        new Invoker(OneOfClientRole).withContext(secondContext).invoke()
+      ).resolves.not.toThrow()
+    })
+
+    it("should throw if user doesn't have none any of the roles assigned as oneOf", () => {
+      const firstContext = makeFakeContext({
+        client: makeFakeMember({
+          roles: ['mantainer'],
+        }),
+      })
+      const secondContext = makeFakeContext()
+
+      expect(
+        new Invoker(OneOfClientRole).withContext(firstContext).invoke()
+      ).rejects.toThrow()
+      expect(
+        new Invoker(OneOfClientRole).withContext(secondContext).invoke()
+      ).rejects.toThrow()
+    })
+  })
+
+  describe('Client Permissions', () => {
+    it('should allow if user has all of the permissions assigned as allOf', () => {
+      const context = makeFakeContext({
+        client: makeFakeMember({
+          hasPermission() {
+            return true
+          },
+        }),
+      })
+
+      expect(
+        new Invoker(AllOfClientPermission).withContext(context).invoke()
+      ).resolves.not.toThrow()
+    })
+
+    it("should throw if doesn't have one of the permission assigned as allOf", () => {
+      const context = makeFakeContext({
+        client: makeFakeMember({
+          hasPermission(permission) {
+            return permission === 'SEND_MESSAGES'
+          },
+        }),
+      })
+
+      expect(
+        new Invoker(AllOfClientPermission).withContext(context).invoke()
+      ).rejects.toThrow()
+    })
+
+    it('should allow if client has one of the permissions assinged as oneOf', () => {
+      const context = makeFakeContext({
+        client: makeFakeMember({
+          hasPermission() {
+            return true
+          },
+        }),
+      })
+
+      expect(
+        new Invoker(OneOfClientPermission).withContext(context).invoke()
+      ).resolves.not.toThrow()
+    })
+
+    it("should throw if client doesn't have one of the roles assigned as oneOf", () => {
+      const context = makeFakeContext({
+        client: makeFakeMember({
+          hasPermission() {
+            return false
+          },
+        }),
+      })
+
+      expect(
+        new Invoker(OneOfClientPermission).withContext(context).invoke()
       ).rejects.toThrow()
     })
   })

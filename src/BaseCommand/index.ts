@@ -27,14 +27,24 @@ export default abstract class BaseCommand implements CommandContract {
   public static $assocs = new Map<string, string>()
 
   /**
-   * Command required permissionss
+   * User required permissionss
    */
   public static $permissions: Collection = allOf()
 
   /**
-   * Command required roles
+   * User required roles
    */
   public static $roles: Collection = allOf()
+
+  /**
+   * Client required permissionss
+   */
+  public static $clientPermissions: Collection = allOf()
+
+  /**
+   * Client required roles
+   */
+  public static $clientRoles: Collection = allOf()
 
   /**
    * Whether the Command was booted
@@ -57,6 +67,8 @@ export default abstract class BaseCommand implements CommandContract {
       this.$assocs = new Map<string, string>()
       this.$roles = allOf()
       this.$permissions = allOf()
+      this.$clientPermissions = allOf()
+      this.$clientRoles = allOf()
     }
 
     this.$isBooted = true
@@ -98,7 +110,7 @@ export default abstract class BaseCommand implements CommandContract {
   }
 
   /**
-   * Set the permissions for the command
+   * Set the user required permissions
    *
    * @param permissions The permissions
    */
@@ -111,8 +123,9 @@ export default abstract class BaseCommand implements CommandContract {
 
     return this
   }
+
   /**
-   * Set the roles for the command
+   * Set the user required roles
    *
    * @param roles The roles
    */
@@ -121,6 +134,38 @@ export default abstract class BaseCommand implements CommandContract {
       this.$roles = allOf(...roles)
     } else {
       this.$roles = roles
+    }
+
+    return this
+  }
+
+  /**
+   * Set the client required permissions
+   *
+   * @param permissions The permissions
+   */
+  public static setClientPermissions(
+    permissions: PermissionString[] | Collection
+  ) {
+    if (Array.isArray(permissions)) {
+      this.$clientPermissions = allOf(...permissions)
+    } else {
+      this.$clientPermissions = permissions
+    }
+
+    return this
+  }
+
+  /**
+   * Set the client required roles
+   *
+   * @param roles The roles
+   */
+  public static setClientRoles(roles: string[]) {
+    if (Array.isArray(roles)) {
+      this.$clientRoles = allOf(...roles)
+    } else {
+      this.$clientRoles = roles
     }
 
     return this
