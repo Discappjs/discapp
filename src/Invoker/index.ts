@@ -220,7 +220,6 @@ export default class Invoker implements InvokerContract {
    */
   private canExecute() {
     const member = this.$context.getMember()
-    const client = this.$context.getGuild().me
     const {
       $roles,
       $permissions,
@@ -229,20 +228,23 @@ export default class Invoker implements InvokerContract {
     } = this.Command
     const hasRoles = this.checkRoles(member, $roles)
     const hasPermissions = this.checkPermissions(member, $permissions)
-    const hasClientPermissions = this.checkPermissions(
-      client,
-      $clientPermissions
-    )
-    const hasClientRoles = this.checkRoles(client, $clientRoles)
-    const guildMatches = this.guildMatches()
 
-    return (
-      hasRoles &&
-      hasPermissions &&
-      hasClientPermissions &&
-      hasClientRoles &&
-      guildMatches
-    )
+    if (this.$context.isGuild()) {
+      const client = this.$context.getGuild().me
+      const hasClientPermissions = this.checkPermissions(
+        client,
+        $clientPermissions
+      )
+      const hasClientRoles = this.checkRoles(client, $clientRoles)
+
+      return (
+        hasRoles && hasPermissions && hasClientPermissions && hasClientRoles
+      )
+    } else {
+      const guildMatches = this.guildMatches()
+
+      return hasRoles && hasPermissions && guildMatches
+    }
   }
 
   /**
