@@ -28,6 +28,7 @@ export { default as StaticCommandContract } from './BaseCommand/StaticCommandCon
 export { default as CommandContract } from './BaseCommand/CommandContract'
 export { default as ParserContract } from './Parser/ParserContract'
 export { default as InvokerContract } from './Invoker/InvokerContract'
+export { default as Mention } from './Mention'
 export * from './types'
 
 /**

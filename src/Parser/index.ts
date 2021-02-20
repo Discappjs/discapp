@@ -1,6 +1,7 @@
 import Storage from '../Storage'
 import CommandContext from '../CommandContext'
 import ParserContract from './ParserContract'
+import Mention from '../Mention'
 import BadInputException from '../Exceptions/BadInputException'
 import StaticCommandContract from '../BaseCommand/StaticCommandContract'
 
@@ -112,10 +113,10 @@ export default class Parser implements ParserContract {
           }
 
           /***
-           * If the Argument is of type User, then we should
+           * If the Argument is of type Mention, then we should
            * convert it to an Discord.js User instance
            */
-          if (type.name === 'User') {
+          if (type === Mention) {
             if (argValue.startsWith('<@') && argValue.endsWith('>')) {
               let mention = argValue.slice(2, -1)
 
@@ -126,8 +127,9 @@ export default class Parser implements ParserContract {
               const user = Storage.getApp()
                 .getClient()
                 .users.cache.get(mention)
+              const value = new Mention(user, context)
 
-              context.set(name, user)
+              context.set(name, value)
             } else {
               /**
                * If the mention is not valid, then we must warn the user.

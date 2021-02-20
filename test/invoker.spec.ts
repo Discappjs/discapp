@@ -1,11 +1,12 @@
 import { Argument, BaseCommand, Command, CommandContext, Storage } from '../src'
 import Invoker from '../src/Invoker'
+import { makeFakeContext } from './helpers/factories'
 
 describe('Invoker', () => {
   afterEach(() => Storage.clear())
 
   it('should correctly inject the arguments', async () => {
-    const context = new CommandContext()
+    const context = makeFakeContext()
 
     context.set('foo', 'bar')
 
@@ -25,7 +26,7 @@ describe('Invoker', () => {
   })
 
   it('should not inject when command is not given', async () => {
-    const context = new CommandContext()
+    const context = makeFakeContext()
 
     @Command('command')
     class DefaultValueCommand extends BaseCommand {

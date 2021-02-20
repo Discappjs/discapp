@@ -11,6 +11,8 @@ export default interface StaticCommandContract {
   readonly $assocs: Map<string, string>
   readonly $roles: Collection
   readonly $permissions: Collection
+  readonly $clientPermissions: Collection
+  readonly $clientRoles: Collection
 
   new (): CommandContract
   boot(): this
@@ -21,6 +23,8 @@ export default interface StaticCommandContract {
   setGuildOnly(guildOnly: boolean): this
   setPermissions(permissions: PermissionString[] | Collection): this
   setRoles(roles: Collection | string[]): this
+  setClientPermissions(permissions: PermissionString[] | Collection): this
+  setClientRoles(roles: Collection | string[]): this
   getArgument(name: string): ArgumentDescriptor | undefined
   validate(): void
 }
