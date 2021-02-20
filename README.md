@@ -6,13 +6,13 @@
   The framework for rapidly building Discord bots
 </h3>
 
-<br/><br/><br/>
+<br/><br/>
 
 ## Introduction
 
 Discapp is a Node.js framework for rapidly building Discord applications (bots) using latest JavaScript features and TypeScript.
 
-While most of Discord libraries only exposes the API for interacting with the Discord API, Discapp was designed to make easy to write fancy Discord applications by getting rid of the boring parts:
+While most of Discord libraries only exposes methods for interacting with the Discord API, Discapp was designed to make easy to write fancy Discord applications by getting rid of the boring parts:
 
 - Command routing
 - Message parsing and validation
@@ -21,9 +21,9 @@ While most of Discord libraries only exposes the API for interacting with the Di
 
 ## Getting Started
 
-- Check out the [Discapp guide](https://discapp.now.sh/).
-- Check out [Discapp examples](https://discapp.now.sh/examples).
+- Check out the [Discapp guide](https://dsicapp.vercel.app/).
+- Check out [Discapp examples](https://github.com/discappjs/discapp-examples).
 
 ## License
 
-Discapp MIT licensed.
+Discapp is MIT licensed.
