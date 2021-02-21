@@ -29,7 +29,8 @@
     "trailingComma": "es5"
   },
   "name": "discapp",
-  "description": "The framework for rapidly building Discord bots",
+  "description": "The framework for rapidly building Discord applications",
+  "repository": "https://github.com/Discappjs/discapp",
   "author": "Jota Júnior <jjunior@protonmail.ch>",
   "module": "dist/discapp.esm.js",
   "peerDependencies": {
