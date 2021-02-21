@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/logo.svg" width="300" alt="Discapp logo">
+  <img src=".github/logo.svg" width="250" alt="Discapp logo">
 </p>
 
 <h3 align="center">
@@ -8,7 +8,8 @@
 <br/>
 <div align="center">
 
-![example workflow](https://github.com/discappjs/discapp/actions/workflows/main.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![ci](https://github.com/discappjs/discapp/actions/workflows/main.yml/badge.svg)
 [![codecov](https://codecov.io/gh/discappjs/discapp/branch/main/graph/badge.svg?token=OELAvP55EX)](https://codecov.io/gh/discappjs/discapp)
 
 </div>
