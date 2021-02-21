@@ -3,8 +3,15 @@
 </p>
 
 <h3 align="center">
-  The framework for rapidly building Discord bots
+  The framework for rapidly building Discord applications
 </h3>
+<br/>
+<div align="center">
+
+![example workflow](https://github.com/discappjs/discapp/actions/workflows/main.yml/badge.svg)
+[![codecov](https://codecov.io/gh/discappjs/discapp/branch/main/graph/badge.svg?token=OELAvP55EX)](https://codecov.io/gh/discappjs/discapp)
+
+</div>
 
 <br/><br/>
 
@@ -21,9 +28,8 @@ While most of Discord libraries only exposes methods for interacting with the Di
 
 ## Getting Started
 
-- Check out the [Discapp guide](https://dsicapp.vercel.app/).
-- Check out [Discapp examples](https://github.com/discappjs/discapp-examples).
+Check out the [Discapp guide](https://discapp.vercel.app/).
 
 ## License
 
-Discapp is MIT licensed.
+Discapp is [MIT licensed](https://github.com/Discappjs/discapp/blob/main/LICENSE).
